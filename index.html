@@ -1,1318 +1,976 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Keuangan Kurir</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-    width:100%;
-    min-height:100%;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f6f8;
-    color:#202124;
-}
-
-body{
-    min-height:100vh;
-}
-
-button,
-input{
-    font-family:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-.app{
-    width:100%;
-    max-width:600px;
-    min-height:100vh;
-    margin:0 auto;
-    background:#f4f6f8;
-}
-
-.header{
-    background:#ffffff;
-    padding:20px 18px 16px;
-    border-bottom:1px solid #e5e7eb;
-    position:sticky;
-    top:0;
-    z-index:20;
-}
-
-.header-title{
-    font-size:23px;
-    font-weight:800;
-}
-
-.header-subtitle{
-    margin-top:5px;
-    color:#6b7280;
-    font-size:14px;
-}
-
-.content{
-    padding:18px;
-    padding-bottom:40px;
-}
-
-.card{
-    background:#ffffff;
-    border-radius:18px;
-    padding:18px;
-    box-shadow:0 4px 16px rgba(0,0,0,.06);
-    margin-bottom:16px;
-}
-
-.center{
-    text-align:center;
-}
-
-.logo{
-    width:82px;
-    height:82px;
-    border-radius:24px;
-    margin:10px auto 18px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#111827;
-    color:#ffffff;
-    font-size:34px;
-    font-weight:900;
-}
-
-h1{
-    font-size:27px;
-    margin-bottom:8px;
-}
-
-h2{
-    font-size:22px;
-    margin-bottom:8px;
-}
-
-h3{
-    font-size:18px;
-    margin-bottom:6px;
-}
-
-p{
-    line-height:1.5;
-}
-
-.muted{
-    color:#6b7280;
-}
-
-.small{
-    font-size:13px;
-}
-
-.form-group{
-    margin-bottom:15px;
-}
-
-label{
-    display:block;
-    font-size:14px;
-    font-weight:700;
-    margin-bottom:7px;
-}
-
-input{
-    width:100%;
-    min-height:50px;
-    border:1px solid #d1d5db;
-    border-radius:12px;
-    padding:0 14px;
-    font-size:16px;
-    background:#ffffff;
-    outline:none;
-}
-
-input:focus{
-    border-color:#111827;
-}
-
-button{
-    width:100%;
-    min-height:52px;
-    border:none;
-    border-radius:13px;
-    font-size:16px;
-    font-weight:800;
-    padding:12px 15px;
-}
-
-.btn{
-    background:#111827;
-    color:#ffffff;
-}
-
-.btn:active{
-    transform:scale(.98);
-}
-
-.btn-secondary{
-    background:#e5e7eb;
-    color:#111827;
-}
-
-.btn-green{
-    background:#16803c;
-    color:#ffffff;
-}
-
-.btn-red{
-    background:#c62828;
-    color:#ffffff;
-}
-
-.btn-blue{
-    background:#1769aa;
-    color:#ffffff;
-}
-
-.btn-orange{
-    background:#d97706;
-    color:#ffffff;
-}
-
-.btn-purple{
-    background:#6d28d9;
-    color:#ffffff;
-}
-
-.btn-edit{
-    background:#7c3aed;
-    color:#ffffff;
-}
-
-.button-space{
-    margin-top:12px;
-}
-
-.hidden{
-    display:none !important;
-}
-
-.error-box{
-    background:#fee2e2;
-    color:#991b1b;
-    border:1px solid #fecaca;
-    border-radius:12px;
-    padding:12px;
-    margin-bottom:15px;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.success-box{
-    background:#dcfce7;
-    color:#166534;
-    border:1px solid #bbf7d0;
-    border-radius:12px;
-    padding:12px;
-    margin-bottom:15px;
-    font-size:14px;
-}
-
-.loading{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-
-.loading-card{
-    background:#ffffff;
-    border-radius:18px;
-    padding:25px;
-    text-align:center;
-    width:100%;
-    max-width:400px;
-}
-
-.spinner{
-    width:38px;
-    height:38px;
-    border:4px solid #e5e7eb;
-    border-top-color:#111827;
-    border-radius:50%;
-    animation:spin .8s linear infinite;
-    margin:0 auto 15px;
-}
-
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-/* DASHBOARD */
-
-.balance-card{
-    background:#111827;
-    color:#ffffff;
-    border-radius:20px;
-    padding:22px;
-    margin-bottom:18px;
-}
-
-.balance-label{
-    font-size:14px;
-    opacity:.8;
-}
-
-.balance-value{
-    font-size:34px;
-    font-weight:900;
-    margin-top:7px;
-    word-break:break-word;
-}
-
-.balance-note{
-    margin-top:8px;
-    font-size:12px;
-    opacity:.7;
-}
-
-.dashboard-buttons{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.dashboard-buttons button{
-    min-height:58px;
-}
-
-.account-card{
-    margin-top:18px;
-}
-
-.account-row{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 0;
-    border-bottom:1px solid #f0f0f0;
-}
-
-.account-row:last-child{
-    border-bottom:none;
-}
-
-.account-label{
-    color:#6b7280;
-    font-size:13px;
-}
-
-.account-value{
-    text-align:right;
-    font-weight:700;
-    max-width:60%;
-    word-break:break-word;
-}
-
-/* MENU */
-
-.page-title{
-    margin-bottom:18px;
-}
-
-.back-button{
-    margin-bottom:15px;
-}
-
-.menu-button{
-    margin-bottom:12px;
-    min-height:58px;
-}
-
-/* HISTORY */
-
-.date-list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.date-button{
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    border-radius:14px;
-    padding:15px;
-    text-align:left;
-    width:100%;
-    min-height:auto;
-}
-
-.date-button-title{
-    font-weight:800;
-    font-size:16px;
-}
-
-.date-button-sub{
-    margin-top:4px;
-    color:#6b7280;
-    font-size:13px;
-}
-
-.transaction-item{
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    border-radius:14px;
-    padding:14px;
-    margin-bottom:10px;
-}
-
-.transaction-top{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.transaction-name{
-    font-weight:800;
-    font-size:16px;
-}
-
-.transaction-amount{
-    font-weight:900;
-    white-space:nowrap;
-}
-
-.transaction-amount.income{
-    color:#16803c;
-}
-
-.transaction-amount.expense{
-    color:#c62828;
-}
-
-.transaction-time{
-    color:#6b7280;
-    font-size:12px;
-    margin-top:6px;
-}
-
-.transaction-date{
-    color:#6b7280;
-    font-size:13px;
-    margin-top:3px;
-}
-
-.daily-total{
-    background:#111827;
-    color:#ffffff;
-    border-radius:15px;
-    padding:16px;
-    margin-bottom:15px;
-}
-
-.daily-total-label{
-    font-size:13px;
-    opacity:.8;
-}
-
-.daily-total-value{
-    font-size:26px;
-    font-weight:900;
-    margin-top:4px;
-}
-
-/* LOCATION */
-
-.location-status{
-    border-radius:12px;
-    padding:12px;
-    background:#f3f4f6;
-    font-size:13px;
-    line-height:1.5;
-    margin-top:10px;
-}
-
-.location-status.ok{
-    background:#dcfce7;
-    color:#166534;
-}
-
-/* EMPTY */
-
-.empty{
-    text-align:center;
-    padding:30px 15px;
-    color:#6b7280;
-}
-
-.empty-icon{
-    font-size:38px;
-    margin-bottom:8px;
-}
-
-/* TOAST */
-
-.toast{
-    position:fixed;
-    left:50%;
-    bottom:20px;
-    transform:translateX(-50%);
-    background:#111827;
-    color:#ffffff;
-    padding:13px 17px;
-    border-radius:12px;
-    font-size:14px;
-    max-width:90%;
-    z-index:100;
-    box-shadow:0 8px 25px rgba(0,0,0,.2);
-}
-
-.toast.error{
-    background:#b91c1c;
-}
-
-.toast.success{
-    background:#166534;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:380px){
-    .content{
-        padding:14px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Keuangan Kurir</title>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .balance-value{
-        font-size:29px;
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #202124;
     }
 
-    h1{
-        font-size:24px;
+    body {
+      min-height: 100vh;
     }
-}
-</style>
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 600px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #f4f6f8;
+    }
+
+    .header {
+      background: #ffffff;
+      padding: 20px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-title {
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .header-subtitle {
+      margin-top: 5px;
+      color: #687280;
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 18px;
+      padding-bottom: 40px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #d7dce2;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 16px;
+      outline: none;
+      background: #ffffff;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 52px;
+      border: 0;
+      border-radius: 13px;
+      font-size: 16px;
+      font-weight: 800;
+      margin-top: 10px;
+      padding: 12px 16px;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-income {
+      background: #16a34a;
+      color: #ffffff;
+    }
+
+    .btn-expense {
+      background: #dc2626;
+      color: #ffffff;
+    }
+
+    .btn-edit {
+      background: #7c3aed;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #202124;
+    }
+
+    .btn-location {
+      background: #0f766e;
+      color: #ffffff;
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .balance-card {
+      background: #111827;
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .balance-label {
+      font-size: 14px;
+      opacity: .8;
+    }
+
+    .balance-value {
+      font-size: 32px;
+      font-weight: 900;
+      margin-top: 8px;
+      word-break: break-word;
+    }
+
+    .menu-button {
+      width: 100%;
+      min-height: 60px;
+      border: 0;
+      border-radius: 15px;
+      margin-bottom: 12px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      padding: 12px 16px;
+    }
+
+    .menu-income {
+      background: #16a34a;
+    }
+
+    .menu-expense {
+      background: #dc2626;
+    }
+
+    .menu-edit {
+      background: #7c3aed;
+    }
+
+    .back-button {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: #e5e7eb;
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    .location-status {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .history-date {
+      width: 100%;
+      text-align: left;
+      background: #ffffff;
+      border: 1px solid #e0e4e8;
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .transaction {
+      border: 1px solid #e1e5e9;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #ffffff;
+    }
+
+    .transaction-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .transaction-title {
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .transaction-time {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .transaction-value {
+      font-weight: 900;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .income-value {
+      color: #15803d;
+    }
+
+    .expense-value {
+      color: #dc2626;
+    }
+
+    .daily-total {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 13px;
+      margin-top: 12px;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 25px 10px;
+      color: #6b7280;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px 10px;
+      color: #6b7280;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #ffffff;
+      padding: 13px 18px;
+      border-radius: 12px;
+      z-index: 100;
+      max-width: calc(100% - 30px);
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.2);
+    }
+
+    .confirm-text {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 420px) {
+      .content {
+        padding: 14px;
+      }
+
+      .balance-value {
+        font-size: 28px;
+      }
+
+      .menu-button {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="app">
+<div class="app">
 
-    <div id="loadingScreen" class="loading">
-        <div class="loading-card">
-            <div class="spinner"></div>
-            <h3>Memuat Keuangan Kurir...</h3>
-            <p class="muted small">Mohon tunggu sebentar.</p>
-        </div>
+  <!-- =========================
+       PENDAFTARAN
+  ========================== -->
+  <section id="registerPage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">Keuangan Kurir</div>
+      <div class="header-subtitle">Pendaftaran Kurir</div>
     </div>
 
-    <!-- REGISTRASI -->
-    <div id="registrationScreen" class="hidden">
-        <div class="header">
-            <div class="header-title">Keuangan Kurir</div>
-            <div class="header-subtitle">Pendaftaran Kurir</div>
+    <div class="content">
+
+      <div class="card">
+
+        <div class="card-title">
+          Daftar Akun Kurir
         </div>
 
-        <div class="content">
+        <div class="form-group">
+          <label for="registerNama">
+            Nama Kurir
+          </label>
 
-            <div class="card center">
-                <div class="logo">K</div>
-
-                <h1>Keuangan Kurir</h1>
-
-                <p class="muted">
-                    Kelola pemasukan, pengeluaran, dan saldo Anda dengan mudah.
-                </p>
-            </div>
-
-            <div id="registrationError" class="error-box hidden"></div>
-
-            <div class="card">
-
-                <h2>Daftar Kurir</h2>
-
-                <p class="muted small" style="margin-bottom:18px;">
-                    Isi data berikut satu kali. Data akan disimpan ke akun Anda.
-                </p>
-
-                <div class="form-group">
-                    <label for="regNama">Nama Kurir</label>
-                    <input
-                        id="regNama"
-                        type="text"
-                        placeholder="Masukkan nama kurir"
-                        autocomplete="name"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="regWhatsapp">Nomor WhatsApp</label>
-                    <input
-                        id="regWhatsapp"
-                        type="tel"
-                        placeholder="Contoh: 081234567890"
-                        autocomplete="tel"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="regAlamat">Alamat Lengkap Kurir</label>
-                    <input
-                        id="regAlamat"
-                        type="text"
-                        placeholder="Masukkan alamat lengkap"
-                        autocomplete="street-address"
-                    >
-                </div>
-
-                <button
-                    id="locationButton"
-                    class="btn-blue"
-                    type="button"
-                    onclick="shareRegistrationLocation()"
-                >
-                    📍 BAGIKAN LOKASI KURIR
-                </button>
-
-                <div
-                    id="locationStatus"
-                    class="location-status"
-                >
-                    Lokasi belum dibagikan.
-                </div>
-
-                <button
-                    class="btn button-space"
-                    type="button"
-                    onclick="registerCourier()"
-                >
-                    SELESAI
-                </button>
-
-            </div>
+          <input
+            id="registerNama"
+            type="text"
+            placeholder="Masukkan nama kurir"
+            autocomplete="name"
+          >
         </div>
+
+        <div class="form-group">
+          <label for="registerWhatsapp">
+            Nomor WhatsApp
+          </label>
+
+          <input
+            id="registerWhatsapp"
+            type="tel"
+            placeholder="Masukkan nomor WhatsApp"
+            autocomplete="tel"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="registerAlamat">
+            Alamat Lengkap Kurir
+          </label>
+
+          <input
+            id="registerAlamat"
+            type="text"
+            placeholder="Masukkan alamat lengkap"
+            autocomplete="street-address"
+          >
+        </div>
+
+        <button
+          id="locationButton"
+          class="btn btn-location"
+          type="button"
+          onclick="shareLocation()"
+        >
+          BAGIKAN LOKASI KURIR
+        </button>
+
+        <div
+          id="locationStatus"
+          class="location-status hidden"
+        ></div>
+
+        <button
+          id="registerButton"
+          class="btn btn-primary"
+          type="button"
+          onclick="registerCourier()"
+        >
+          SELESAI
+        </button>
+
+      </div>
+
     </div>
 
-
-    <!-- DASHBOARD -->
-    <div id="dashboardScreen" class="hidden">
-
-        <div class="header">
-            <div class="header-title">Keuangan Kurir</div>
-            <div class="header-subtitle" id="dashboardGreeting">
-                Dashboard
-            </div>
-        </div>
-
-        <div class="content">
-
-            <div class="balance-card">
-
-                <div class="balance-label">
-                    SALDO / UANG SAAT INI
-                </div>
-
-                <div
-                    id="dashboardBalance"
-                    class="balance-value"
-                >
-                    Rp0
-                </div>
-
-                <div class="balance-note">
-                    Saldo akan berubah berdasarkan pemasukan dan pengeluaran.
-                </div>
-
-            </div>
+  </section>
 
 
-            <div class="dashboard-buttons">
+  <!-- =========================
+       DASHBOARD
+  ========================== -->
+  <section id="dashboardPage" class="hidden">
 
-                <button
-                    class="btn-green"
-                    type="button"
-                    onclick="showIncomeMenu()"
-                >
-                    💰 PEMASUKAN
-                </button>
+    <div class="header">
+      <div class="header-title">
+        Keuangan Kurir
+      </div>
 
-                <button
-                    class="btn-red"
-                    type="button"
-                    onclick="showExpenseMenu()"
-                >
-                    🛒 PENGELUARAN
-                </button>
-
-                <button
-                    class="btn-edit"
-                    type="button"
-                    onclick="showEditAccount()"
-                >
-                    ⚙️ EDIT AKUN KURIR
-                </button>
-
-            </div>
-
-
-            <div class="card account-card">
-
-                <h3>Data Kurir</h3>
-
-                <div class="account-row">
-                    <div class="account-label">Nama</div>
-                    <div
-                        id="dashboardNama"
-                        class="account-value"
-                    >
-                        -
-                    </div>
-                </div>
-
-                <div class="account-row">
-                    <div class="account-label">WhatsApp</div>
-                    <div
-                        id="dashboardWhatsapp"
-                        class="account-value"
-                    >
-                        -
-                    </div>
-                </div>
-
-                <div class="account-row">
-                    <div class="account-label">Alamat</div>
-                    <div
-                        id="dashboardAlamat"
-                        class="account-value"
-                    >
-                        -
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
+      <div
+        id="dashboardSubtitle"
+        class="header-subtitle"
+      >
+        Dashboard
+      </div>
     </div>
 
+    <div class="content">
 
-    <!-- MENU PEMASUKAN -->
-    <div id="incomeMenuScreen" class="hidden">
+      <div class="balance-card">
 
-        <div class="header">
-            <div class="header-title">Pemasukan</div>
-            <div class="header-subtitle">
-                Kelola pemasukan kurir
-            </div>
+        <div class="balance-label">
+          SALDO SAAT INI
         </div>
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showDashboard()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div class="card page-title">
-                <h2>Pemasukan</h2>
-                <p class="muted">
-                    Pilih menu yang ingin digunakan.
-                </p>
-            </div>
-
-            <button
-                class="btn-green menu-button"
-                type="button"
-                onclick="showAddIncome()"
-            >
-                ➕ TAMBAHKAN PEMASUKAN
-            </button>
-
-            <button
-                class="btn-blue menu-button"
-                type="button"
-                onclick="showIncomeHistory()"
-            >
-                📋 RIWAYAT PEMASUKAN
-            </button>
-
+        <div
+          id="dashboardBalance"
+          class="balance-value"
+        >
+          Rp0
         </div>
+
+      </div>
+
+      <button
+        class="menu-button menu-income"
+        onclick="openIncomeMenu()"
+      >
+        PEMASUKAN
+      </button>
+
+      <button
+        class="menu-button menu-expense"
+        onclick="openExpenseMenu()"
+      >
+        PENGELUARAN
+      </button>
+
+      <button
+        class="menu-button menu-edit"
+        onclick="openEditAccount()"
+      >
+        EDIT AKUN KURIR
+      </button>
+
     </div>
 
+  </section>
 
-    <!-- TAMBAH PEMASUKAN -->
-    <div id="addIncomeScreen" class="hidden">
 
-        <div class="header">
-            <div class="header-title">Tambah Pemasukan</div>
-            <div class="header-subtitle">
-                Catat pemasukan baru
-            </div>
-        </div>
+  <!-- =========================
+       MENU PEMASUKAN
+  ========================== -->
+  <section id="incomeMenuPage" class="hidden">
 
-        <div class="content">
+    <div class="header">
+      <div class="header-title">
+        Pemasukan
+      </div>
 
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showIncomeMenu()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div id="incomeError" class="error-box hidden"></div>
-
-            <div class="card">
-
-                <h2>Tambah Pemasukan</h2>
-
-                <p class="muted small" style="margin-bottom:18px;">
-                    Data akan langsung disimpan.
-                </p>
-
-                <div class="form-group">
-                    <label for="incomeRegion">
-                        Wilayah
-                    </label>
-
-                    <input
-                        id="incomeRegion"
-                        type="text"
-                        placeholder="Contoh: Tamalanrea"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="incomeAmount">
-                        Ongkir / Pemasukan
-                    </label>
-
-                    <input
-                        id="incomeAmount"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="Contoh: 10000"
-                    >
-                </div>
-
-                <button
-                    class="btn-green"
-                    type="button"
-                    onclick="saveIncome()"
-                >
-                    SIMPAN PEMASUKAN
-                </button>
-
-            </div>
-
-        </div>
+      <div class="header-subtitle">
+        Kelola pemasukan kurir
+      </div>
     </div>
 
+    <div class="content">
 
-    <!-- RIWAYAT PEMASUKAN -->
-    <div id="incomeHistoryScreen" class="hidden">
+      <button
+        class="back-button"
+        onclick="goDashboard()"
+      >
+        ← KEMBALI
+      </button>
 
-        <div class="header">
-            <div class="header-title">Riwayat Pemasukan</div>
-            <div class="header-subtitle">
-                Pilih tanggal untuk melihat detail
-            </div>
-        </div>
+      <button
+        class="menu-button menu-income"
+        onclick="openAddIncome()"
+      >
+        TAMBAHKAN PEMASUKAN
+      </button>
 
-        <div class="content">
+      <button
+        class="menu-button menu-income"
+        onclick="openIncomeHistory()"
+      >
+        RIWAYAT PEMASUKAN
+      </button>
 
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showIncomeMenu()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div
-                id="incomeHistoryList"
-                class="date-list"
-            ></div>
-
-        </div>
     </div>
 
+  </section>
 
-    <!-- DETAIL PEMASUKAN -->
-    <div id="incomeDetailScreen" class="hidden">
 
-        <div class="header">
-            <div class="header-title">Detail Pemasukan</div>
-            <div
-                id="incomeDetailDateHeader"
-                class="header-subtitle"
-            >
-                -
-            </div>
-        </div>
+  <!-- =========================
+       TAMBAH PEMASUKAN
+  ========================== -->
+  <section id="addIncomePage" class="hidden">
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showIncomeHistory()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div
-                id="incomeDailyTotal"
-                class="daily-total"
-            ></div>
-
-            <div
-                id="incomeDetailList"
-            ></div>
-
-        </div>
+    <div class="header">
+      <div class="header-title">
+        Tambah Pemasukan
+      </div>
     </div>
 
+    <div class="content">
 
-    <!-- MENU PENGELUARAN -->
-    <div id="expenseMenuScreen" class="hidden">
+      <button
+        class="back-button"
+        onclick="openIncomeMenu()"
+      >
+        ← KEMBALI
+      </button>
 
-        <div class="header">
-            <div class="header-title">Pengeluaran</div>
-            <div class="header-subtitle">
-                Kelola pengeluaran kurir
-            </div>
-        </div>
+      <div class="card">
 
-        <div class="content">
+        <div class="form-group">
 
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showDashboard()"
-            >
-                ← KEMBALI
-            </button>
+          <label for="incomeRegion">
+            Wilayah
+          </label>
 
-            <div class="card page-title">
-                <h2>Pengeluaran</h2>
-                <p class="muted">
-                    Pilih menu yang ingin digunakan.
-                </p>
-            </div>
-
-            <button
-                class="btn-red menu-button"
-                type="button"
-                onclick="showAddExpense()"
-            >
-                ➕ TAMBAHKAN PENGELUARAN
-            </button>
-
-            <button
-                class="btn-blue menu-button"
-                type="button"
-                onclick="showExpenseHistory()"
-            >
-                📋 RIWAYAT PENGELUARAN
-            </button>
+          <input
+            id="incomeRegion"
+            type="text"
+            placeholder="Contoh: Kecamatan A"
+          >
 
         </div>
+
+        <div class="form-group">
+
+          <label for="incomeAmount">
+            Ongkir / Pemasukan
+          </label>
+
+          <input
+            id="incomeAmount"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            placeholder="Masukkan nominal"
+          >
+
+        </div>
+
+        <button
+          id="saveIncomeButton"
+          class="btn btn-income"
+          onclick="saveIncome()"
+        >
+          SIMPAN PEMASUKAN
+        </button>
+
+      </div>
+
     </div>
 
+  </section>
 
-    <!-- TAMBAH PENGELUARAN -->
-    <div id="addExpenseScreen" class="hidden">
 
-        <div class="header">
-            <div class="header-title">Tambah Pengeluaran</div>
-            <div class="header-subtitle">
-                Catat pengeluaran baru
-            </div>
-        </div>
+  <!-- =========================
+       RIWAYAT PEMASUKAN
+  ========================== -->
+  <section id="incomeHistoryPage" class="hidden">
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showExpenseMenu()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div id="expenseError" class="error-box hidden"></div>
-
-            <div class="card">
-
-                <h2>Tambah Pengeluaran</h2>
-
-                <p class="muted small" style="margin-bottom:18px;">
-                    Data akan langsung disimpan.
-                </p>
-
-                <div class="form-group">
-                    <label for="expenseName">
-                        Belanjaan
-                    </label>
-
-                    <input
-                        id="expenseName"
-                        type="text"
-                        placeholder="Contoh: Bensin"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="expenseAmount">
-                        Harga Belanjaan
-                    </label>
-
-                    <input
-                        id="expenseAmount"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                        placeholder="Contoh: 15000"
-                    >
-                </div>
-
-                <button
-                    class="btn-red"
-                    type="button"
-                    onclick="saveExpense()"
-                >
-                    SIMPAN PENGELUARAN
-                </button>
-
-            </div>
-
-        </div>
+    <div class="header">
+      <div class="header-title">
+        Riwayat Pemasukan
+      </div>
     </div>
 
+    <div class="content">
 
-    <!-- RIWAYAT PENGELUARAN -->
-    <div id="expenseHistoryScreen" class="hidden">
+      <button
+        class="back-button"
+        onclick="openIncomeMenu()"
+      >
+        ← KEMBALI
+      </button>
 
-        <div class="header">
-            <div class="header-title">Riwayat Pengeluaran</div>
-            <div class="header-subtitle">
-                Pilih tanggal untuk melihat detail
-            </div>
+      <div id="incomeHistoryContent">
+        <div class="loading">
+          Memuat riwayat...
         </div>
+      </div>
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showExpenseMenu()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div
-                id="expenseHistoryList"
-                class="date-list"
-            ></div>
-
-        </div>
     </div>
 
+  </section>
 
-    <!-- DETAIL PENGELUARAN -->
-    <div id="expenseDetailScreen" class="hidden">
 
-        <div class="header">
-            <div class="header-title">Detail Pengeluaran</div>
-            <div
-                id="expenseDetailDateHeader"
-                class="header-subtitle"
-            >
-                -
-            </div>
-        </div>
+  <!-- =========================
+       DETAIL PEMASUKAN
+  ========================== -->
+  <section id="incomeDetailPage" class="hidden">
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showExpenseHistory()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div
-                id="expenseDailyTotal"
-                class="daily-total"
-            ></div>
-
-            <div
-                id="expenseDetailList"
-            ></div>
-
-        </div>
+    <div class="header">
+      <div class="header-title">
+        Detail Pemasukan
+      </div>
     </div>
 
+    <div class="content">
 
-    <!-- EDIT AKUN -->
-    <div id="editAccountScreen" class="hidden">
+      <button
+        class="back-button"
+        onclick="openIncomeHistory()"
+      >
+        ← KEMBALI
+      </button>
 
-        <div class="header">
-            <div class="header-title">Edit Akun Kurir</div>
-            <div class="header-subtitle">
-                Ubah data akun dan saldo
-            </div>
-        </div>
+      <div id="incomeDetailContent"></div>
 
-        <div class="content">
-
-            <button
-                class="btn-secondary back-button"
-                type="button"
-                onclick="showDashboard()"
-            >
-                ← KEMBALI
-            </button>
-
-            <div id="editAccountError" class="error-box hidden"></div>
-
-            <div class="card">
-
-                <h2>Edit Akun</h2>
-
-                <div class="form-group">
-                    <label for="editNama">
-                        Nama Kurir
-                    </label>
-
-                    <input
-                        id="editNama"
-                        type="text"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="editWhatsapp">
-                        Nomor WhatsApp
-                    </label>
-
-                    <input
-                        id="editWhatsapp"
-                        type="tel"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="editAlamat">
-                        Alamat Lengkap Kurir
-                    </label>
-
-                    <input
-                        id="editAlamat"
-                        type="text"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="editSaldo">
-                        Saldo / Uang Saat Ini
-                    </label>
-
-                    <input
-                        id="editSaldo"
-                        type="number"
-                        min="0"
-                        step="1"
-                        inputmode="numeric"
-                    >
-                </div>
-
-                <button
-                    class="btn-edit"
-                    type="button"
-                    onclick="saveAccountChanges()"
-                >
-                    SIMPAN PERUBAHAN
-                </button>
-
-            </div>
-
-            <div class="card">
-
-                <h3>Lokasi Kurir</h3>
-
-                <p
-                    id="savedLocationText"
-                    class="muted small"
-                    style="margin-bottom:12px;"
-                >
-                    Lokasi belum tersedia.
-                </p>
-
-                <button
-                    class="btn-blue"
-                    type="button"
-                    onclick="updateCourierLocation()"
-                >
-                    📍 BAGIKAN / PERBARUI LOKASI
-                </button>
-
-            </div>
-
-        </div>
     </div>
+
+  </section>
+
+
+  <!-- =========================
+       MENU PENGELUARAN
+  ========================== -->
+  <section id="expenseMenuPage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">
+        Pengeluaran
+      </div>
+
+      <div class="header-subtitle">
+        Kelola pengeluaran kurir
+      </div>
+    </div>
+
+    <div class="content">
+
+      <button
+        class="back-button"
+        onclick="goDashboard()"
+      >
+        ← KEMBALI
+      </button>
+
+      <button
+        class="menu-button menu-expense"
+        onclick="openAddExpense()"
+      >
+        TAMBAHKAN PENGELUARAN
+      </button>
+
+      <button
+        class="menu-button menu-expense"
+        onclick="openExpenseHistory()"
+      >
+        RIWAYAT PENGELUARAN
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       TAMBAH PENGELUARAN
+  ========================== -->
+  <section id="addExpensePage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">
+        Tambah Pengeluaran
+      </div>
+    </div>
+
+    <div class="content">
+
+      <button
+        class="back-button"
+        onclick="openExpenseMenu()"
+      >
+        ← KEMBALI
+      </button>
+
+      <div class="card">
+
+        <div class="form-group">
+
+          <label for="expenseItem">
+            Belanjaan
+          </label>
+
+          <input
+            id="expenseItem"
+            type="text"
+            placeholder="Contoh: Bensin"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="expenseAmount">
+            Harga Belanjaan
+          </label>
+
+          <input
+            id="expenseAmount"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            placeholder="Masukkan nominal"
+          >
+
+        </div>
+
+        <button
+          id="saveExpenseButton"
+          class="btn btn-expense"
+          onclick="saveExpense()"
+        >
+          SIMPAN PENGELUARAN
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       RIWAYAT PENGELUARAN
+  ========================== -->
+  <section id="expenseHistoryPage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">
+        Riwayat Pengeluaran
+      </div>
+    </div>
+
+    <div class="content">
+
+      <button
+        class="back-button"
+        onclick="openExpenseMenu()"
+      >
+        ← KEMBALI
+      </button>
+
+      <div id="expenseHistoryContent">
+        <div class="loading">
+          Memuat riwayat...
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       DETAIL PENGELUARAN
+  ========================== -->
+  <section id="expenseDetailPage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">
+        Detail Pengeluaran
+      </div>
+    </div>
+
+    <div class="content">
+
+      <button
+        class="back-button"
+        onclick="openExpenseHistory()"
+      >
+        ← KEMBALI
+      </button>
+
+      <div id="expenseDetailContent"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       EDIT AKUN
+  ========================== -->
+  <section id="editAccountPage" class="hidden">
+
+    <div class="header">
+      <div class="header-title">
+        Edit Akun Kurir
+      </div>
+
+      <div class="header-subtitle">
+        Ubah data akun dan saldo
+      </div>
+    </div>
+
+    <div class="content">
+
+      <button
+        class="back-button"
+        onclick="goDashboard()"
+      >
+        ← KEMBALI
+      </button>
+
+      <div class="card">
+
+        <div class="form-group">
+
+          <label for="editNama">
+            Nama Kurir
+          </label>
+
+          <input
+            id="editNama"
+            type="text"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="editWhatsapp">
+            Nomor WhatsApp
+          </label>
+
+          <input
+            id="editWhatsapp"
+            type="tel"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="editAlamat">
+            Alamat Lengkap Kurir
+          </label>
+
+          <input
+            id="editAlamat"
+            type="text"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="editSaldo">
+            Saldo
+          </label>
+
+          <input
+            id="editSaldo"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+          >
+
+        </div>
+
+        <button
+          id="saveAccountButton"
+          class="btn btn-edit"
+          onclick="saveAccount()"
+        >
+          SIMPAN PERUBAHAN
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
 
 </div>
 
 
 <div
-    id="toast"
-    class="toast hidden"
+  id="toast"
+  class="toast hidden"
 ></div>
 
 
 <script>
 
 /* =========================================================
-   KONFIGURASI SUPABASE
+   SUPABASE
    ========================================================= */
 
 const SUPABASE_URL =
-    "https://erdmastyaeaubqvqpurx.supabase.co";
+  "https://erdmastyaeaubqvqpurx.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_knCGieSffnDxLWPjjuNMcg_6OmMPgRb";
+  "sb_publishable_knCGieSffnDxLWPjjuNMcg_6OmMPgRb";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
 
 /* =========================================================
-   MEMBUAT CLIENT SUPABASE
-   ========================================================= */
-
-let supabaseClient = null;
-
-try {
-
-    if (
-        SUPABASE_URL &&
-        SUPABASE_PUBLISHABLE_KEY
-    ) {
-
-        supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLISHABLE_KEY
-            );
-
-    }
-
-} catch(error){
-
-    console.error(
-        "Gagal membuat Supabase client:",
-        error
-    );
-
-}
-
-
-/* =========================================================
-   DATA APLIKASI
+   STATE
    ========================================================= */
 
 let currentUser = null;
 let currentProfile = null;
 
-let registrationLatitude = null;
-let registrationLongitude = null;
-
-let selectedHistoryDate = null;
+let currentLatitude = null;
+let currentLongitude = null;
 
 
 /* =========================================================
    ELEMENT
    ========================================================= */
 
-const screens = [
-
-    "loadingScreen",
-    "registrationScreen",
-    "dashboardScreen",
-
-    "incomeMenuScreen",
-    "addIncomeScreen",
-    "incomeHistoryScreen",
-    "incomeDetailScreen",
-
-    "expenseMenuScreen",
-    "addExpenseScreen",
-    "expenseHistoryScreen",
-    "expenseDetailScreen",
-
-    "editAccountScreen"
-
-];
-
-
-/* =========================================================
-   FORMAT RUPIAH
-   ========================================================= */
-
-function formatRupiah(value){
-
-    const number =
-        Number(value || 0);
-
-    return new Intl.NumberFormat(
-        "id-ID",
-        {
-            style:"currency",
-            currency:"IDR",
-            minimumFractionDigits:0,
-            maximumFractionDigits:0
-        }
-    ).format(number);
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHtml(value){
-
-    if(value === null || value === undefined){
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+function $(id) {
+  return document.getElementById(id);
 }
 
 
@@ -1322,758 +980,440 @@ function escapeHtml(value){
 
 let toastTimer = null;
 
-function showToast(
-    message,
-    type="normal"
-){
+function showToast(message) {
 
-    const toast =
-        document.getElementById("toast");
+  const toast = $("toast");
 
-    toast.textContent = message;
+  toast.textContent = message;
 
-    toast.className =
-        "toast";
+  toast.classList.remove("hidden");
 
-    if(type === "error"){
-        toast.classList.add("error");
-    }
+  clearTimeout(toastTimer);
 
-    if(type === "success"){
-        toast.classList.add("success");
-    }
+  toastTimer = setTimeout(() => {
 
-    clearTimeout(toastTimer);
+    toast.classList.add("hidden");
 
-    toastTimer =
-        setTimeout(
-            () => {
-                toast.classList.add("hidden");
-            },
-            3000
-        );
+  }, 3000);
 }
 
 
 /* =========================================================
-   SCREEN NAVIGATION
+   FORMAT RUPIAH
    ========================================================= */
 
-function hideAllScreens(){
+function formatRupiah(value) {
 
-    screens.forEach(
-        id => {
+  const number = Number(value) || 0;
 
-            const element =
-                document.getElementById(id);
+  return "Rp" +
+    number.toLocaleString("id-ID");
+}
 
-            if(element){
-                element.classList.add("hidden");
-            }
 
-        }
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   HIDE ALL PAGES
+   ========================================================= */
+
+function hideAllPages() {
+
+  const pages = [
+
+    "registerPage",
+    "dashboardPage",
+
+    "incomeMenuPage",
+    "addIncomePage",
+    "incomeHistoryPage",
+    "incomeDetailPage",
+
+    "expenseMenuPage",
+    "addExpensePage",
+    "expenseHistoryPage",
+    "expenseDetailPage",
+
+    "editAccountPage"
+
+  ];
+
+  pages.forEach(id => {
+
+    const element = $(id);
+
+    if (element) {
+      element.classList.add("hidden");
+    }
+
+  });
+}
+
+
+/* =========================================================
+   SHOW PAGE
+   ========================================================= */
+
+function showPage(id) {
+
+  hideAllPages();
+
+  $(id).classList.remove("hidden");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "instant"
+  });
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+function shareLocation() {
+
+  if (!navigator.geolocation) {
+
+    showToast(
+      "Browser tidak mendukung lokasi."
     );
 
-}
+    return;
+  }
 
+  const button = $("locationButton");
 
-function showScreen(id){
+  button.disabled = true;
 
-    hideAllScreens();
+  button.textContent =
+    "MENGAMBIL LOKASI...";
 
-    const screen =
-        document.getElementById(id);
+  navigator.geolocation.getCurrentPosition(
 
-    if(screen){
-        screen.classList.remove("hidden");
+    position => {
+
+      currentLatitude =
+        position.coords.latitude;
+
+      currentLongitude =
+        position.coords.longitude;
+
+      const status =
+        $("locationStatus");
+
+      status.classList.remove("hidden");
+
+      status.innerHTML =
+        "✓ Lokasi berhasil dibagikan.<br>" +
+        "Latitude: " +
+        escapeHtml(
+          currentLatitude.toFixed(6)
+        ) +
+        "<br>" +
+        "Longitude: " +
+        escapeHtml(
+          currentLongitude.toFixed(6)
+        );
+
+      button.disabled = false;
+
+      button.textContent =
+        "LOKASI SUDAH DIBAGIKAN";
+
+    },
+
+    error => {
+
+      button.disabled = false;
+
+      button.textContent =
+        "BAGIKAN LOKASI KURIR";
+
+      showToast(
+        "Lokasi belum berhasil diambil. Pastikan izin lokasi diberikan."
+      );
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
     }
 
+  );
 }
 
 
 /* =========================================================
-   ERROR HELPERS
+   REGISTER
    ========================================================= */
 
-function showError(elementId,message){
+async function registerCourier() {
 
-    const element =
-        document.getElementById(elementId);
+  const nama =
+    $("registerNama").value.trim();
 
-    if(!element){
-        return;
-    }
+  const whatsapp =
+    $("registerWhatsapp").value.trim();
 
-    element.textContent =
-        message;
+  const alamat =
+    $("registerAlamat").value.trim();
 
-    element.classList.remove(
-        "hidden"
-    );
-}
+  if (!nama) {
 
-
-function hideError(elementId){
-
-    const element =
-        document.getElementById(elementId);
-
-    if(element){
-        element.classList.add(
-            "hidden"
-        );
-    }
-
-}
-
-
-/* =========================================================
-   CEK KONFIGURASI
-   ========================================================= */
-
-function checkSupabaseConfig(){
-
-    if(
-        !SUPABASE_URL ||
-        SUPABASE_URL.includes(
-            "MASUKKAN_PROJECT"
-        )
-    ){
-        return false;
-    }
-
-    if(
-        !SUPABASE_PUBLISHABLE_KEY ||
-        SUPABASE_PUBLISHABLE_KEY.includes(
-            "MASUKKAN_PUBLISHABLE"
-        )
-    ){
-        return false;
-    }
-
-    return true;
-}
-
-
-/* =========================================================
-   FORMAT TANGGAL
-   ========================================================= */
-
-function getLocalDateKey(dateString){
-
-    const date =
-        new Date(dateString);
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth()+1
-        ).padStart(2,"0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2,"0");
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function formatDateIndonesia(dateKey){
-
-    if(!dateKey){
-        return "-";
-    }
-
-    const parts =
-        dateKey.split("-");
-
-    if(parts.length !== 3){
-        return dateKey;
-    }
-
-    const date =
-        new Date(
-            Number(parts[0]),
-            Number(parts[1])-1,
-            Number(parts[2])
-        );
-
-    return new Intl.DateTimeFormat(
-        "id-ID",
-        {
-            weekday:"long",
-            day:"numeric",
-            month:"long",
-            year:"numeric"
-        }
-    ).format(date);
-}
-
-
-function formatTime(dateString){
-
-    const date =
-        new Date(dateString);
-
-    return new Intl.DateTimeFormat(
-        "id-ID",
-        {
-            hour:"2-digit",
-            minute:"2-digit"
-        }
-    ).format(date);
-
-}
-
-
-/* =========================================================
-   INIT
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeApp
-);
-
-
-async function initializeApp(){
-
-    if(!checkSupabaseConfig()){
-
-        showScreen(
-            "registrationScreen"
-        );
-
-        showError(
-            "registrationError",
-            "Konfigurasi Supabase belum diisi."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient.auth.getSession();
-
-
-        if(error){
-            throw error;
-        }
-
-
-        if(
-            data &&
-            data.session &&
-            data.session.user
-        ){
-
-            currentUser =
-                data.session.user;
-
-        }else{
-
-            const {
-                data:signData,
-                error:signError
-            } =
-            await supabaseClient.auth.signInAnonymously();
-
-
-            if(signError){
-                throw signError;
-            }
-
-
-            currentUser =
-                signData.user;
-
-        }
-
-
-        await loadCurrentProfile();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showScreen(
-            "registrationScreen"
-        );
-
-        showError(
-            "registrationError",
-            "Gagal terhubung ke Supabase: " +
-            getErrorMessage(error)
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   ERROR MESSAGE
-   ========================================================= */
-
-function getErrorMessage(error){
-
-    if(!error){
-        return "Kesalahan tidak diketahui.";
-    }
-
-    if(
-        typeof error === "string"
-    ){
-        return error;
-    }
-
-    return (
-        error.message ||
-        error.error_description ||
-        "Kesalahan tidak diketahui."
+    showToast(
+      "Nama kurir wajib diisi."
     );
 
-}
+    return;
+  }
 
+  if (!whatsapp) {
 
-/* =========================================================
-   LOAD PROFILE
-   ========================================================= */
+    showToast(
+      "Nomor WhatsApp wajib diisi."
+    );
 
-async function loadCurrentProfile(){
+    return;
+  }
 
-    if(!currentUser){
+  if (!alamat) {
 
-        showScreen(
-            "registrationScreen"
-        );
+    showToast(
+      "Alamat wajib diisi."
+    );
 
-        return;
-    }
+    return;
+  }
 
+  if (
+    currentLatitude === null ||
+    currentLongitude === null
+  ) {
+
+    showToast(
+      "Silakan bagikan lokasi kurir terlebih dahulu."
+    );
+
+    return;
+  }
+
+  const button =
+    $("registerButton");
+
+  button.disabled = true;
+
+  button.textContent =
+    "MENYIMPAN...";
+
+  try {
 
     const {
+      data: sessionData,
+      error: sessionError
+    } =
+      await supabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    let user =
+      sessionData.session?.user;
+
+    if (!user) {
+
+      const {
         data,
         error
+      } =
+        await supabaseClient.auth.signInAnonymously();
+
+      if (error) {
+        throw error;
+      }
+
+      user = data.user;
+    }
+
+    currentUser = user;
+
+    const {
+      data: existingProfile,
+      error: existingError
     } =
-    await supabaseClient
+      await supabaseClient
         .from("kurir_profiles")
         .select("*")
-        .eq(
-            "id",
-            currentUser.id
-        )
+        .eq("id", user.id)
         .maybeSingle();
 
-
-    if(error){
-
-        console.error(error);
-
-        showScreen(
-            "registrationScreen"
-        );
-
-        showError(
-            "registrationError",
-            "Gagal membaca data akun: " +
-            getErrorMessage(error)
-        );
-
-        return;
+    if (existingError) {
+      throw existingError;
     }
 
+    if (existingProfile) {
 
-    if(data){
+      currentProfile =
+        existingProfile;
 
-        currentProfile =
-            data;
+      showDashboard();
 
-        showDashboard();
-
-    }else{
-
-        currentProfile =
-            null;
-
-        showScreen(
-            "registrationScreen"
-        );
-
+      return;
     }
 
-}
+    const {
+      data: profile,
+      error
+    } =
+      await supabaseClient
+        .from("kurir_profiles")
+        .insert({
 
+          id: user.id,
 
-/* =========================================================
-   LOKASI REGISTRASI
-   ========================================================= */
+          nama_kurir: nama,
 
-function shareRegistrationLocation(){
+          nomor_whatsapp: whatsapp,
 
-    hideError(
-        "registrationError"
+          alamat_lengkap: alamat,
+
+          latitude:
+            currentLatitude,
+
+          longitude:
+            currentLongitude,
+
+          saldo: 0
+
+        })
+        .select()
+        .single();
+
+    if (error) {
+      throw error;
+    }
+
+    currentProfile =
+      profile;
+
+    showToast(
+      "Akun berhasil dibuat."
     );
 
+    showDashboard();
 
-    if(!navigator.geolocation){
+  } catch (error) {
 
-        showError(
-            "registrationError",
-            "Browser ini tidak mendukung lokasi."
-        );
+    console.error(error);
 
-        return;
-    }
+    showToast(
+      "Pendaftaran gagal: " +
+      (error.message || "Terjadi kesalahan.")
+    );
 
+  } finally {
 
-    const button =
-        document.getElementById(
-            "locationButton"
-        );
-
-    const status =
-        document.getElementById(
-            "locationStatus"
-        );
-
-
-    button.disabled = true;
+    button.disabled = false;
 
     button.textContent =
-        "📍 MENGAMBIL LOKASI...";
+      "SELESAI";
 
-
-    navigator.geolocation.getCurrentPosition(
-
-        position => {
-
-            registrationLatitude =
-                position.coords.latitude;
-
-            registrationLongitude =
-                position.coords.longitude;
-
-
-            status.className =
-                "location-status ok";
-
-
-            status.innerHTML =
-                "✓ Lokasi berhasil dibagikan.<br>" +
-                "Latitude: " +
-                registrationLatitude.toFixed(6) +
-                "<br>" +
-                "Longitude: " +
-                registrationLongitude.toFixed(6);
-
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "📍 LOKASI SUDAH DIBAGIKAN";
-
-        },
-
-        error => {
-
-            console.error(error);
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "📍 BAGIKAN LOKASI KURIR";
-
-
-            let message =
-                "Lokasi tidak berhasil diambil.";
-
-
-            if(error.code === 1){
-
-                message =
-                    "Izin lokasi ditolak. " +
-                    "Izinkan akses lokasi pada browser lalu coba lagi.";
-
-            }else if(error.code === 2){
-
-                message =
-                    "Lokasi tidak tersedia.";
-
-            }else if(error.code === 3){
-
-                message =
-                    "Pengambilan lokasi terlalu lama. Coba lagi.";
-
-            }
-
-
-            showError(
-                "registrationError",
-                message
-            );
-
-        },
-
-        {
-            enableHighAccuracy:true,
-            timeout:15000,
-            maximumAge:0
-        }
-
-    );
-
+  }
 }
 
 
 /* =========================================================
-   REGISTER COURIER
+   LOAD ACCOUNT
    ========================================================= */
 
-async function registerCourier(){
+async function loadAccount() {
 
-    hideError(
-        "registrationError"
+  try {
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } =
+      await supabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    let user =
+      sessionData.session?.user;
+
+    if (!user) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signInAnonymously();
+
+      if (error) {
+        throw error;
+      }
+
+      user = data.user;
+    }
+
+    currentUser = user;
+
+    const {
+      data: profile,
+      error
+    } =
+      await supabaseClient
+        .from("kurir_profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (profile) {
+
+      currentProfile =
+        profile;
+
+      showDashboard();
+
+    } else {
+
+      showPage("registerPage");
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    showPage("registerPage");
+
+    showToast(
+      "Gagal terhubung ke Supabase: " +
+      (error.message || "")
     );
-
-
-    if(!currentUser){
-
-        showError(
-            "registrationError",
-            "Akun sementara belum siap. Muat ulang halaman."
-        );
-
-        return;
-    }
-
-
-    const nama =
-        document
-            .getElementById("regNama")
-            .value
-            .trim();
-
-
-    const whatsapp =
-        document
-            .getElementById("regWhatsapp")
-            .value
-            .trim();
-
-
-    const alamat =
-        document
-            .getElementById("regAlamat")
-            .value
-            .trim();
-
-
-    if(!nama){
-
-        showError(
-            "registrationError",
-            "Nama kurir wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(!whatsapp){
-
-        showError(
-            "registrationError",
-            "Nomor WhatsApp wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(!alamat){
-
-        showError(
-            "registrationError",
-            "Alamat lengkap wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(
-        registrationLatitude === null ||
-        registrationLongitude === null
-    ){
-
-        showError(
-            "registrationError",
-            "Silakan bagikan lokasi kurir terlebih dahulu."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("kurir_profiles")
-            .insert({
-
-                id:currentUser.id,
-
-                nama_kurir:nama,
-
-                nomor_whatsapp:whatsapp,
-
-                alamat_lengkap:alamat,
-
-                latitude:
-                    registrationLatitude,
-
-                longitude:
-                    registrationLongitude,
-
-                saldo:0
-
-            })
-            .select()
-            .single();
-
-
-        if(error){
-            throw error;
-        }
-
-
-        currentProfile =
-            data;
-
-
-        showToast(
-            "Akun kurir berhasil dibuat.",
-            "success"
-        );
-
-
-        showDashboard();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showError(
-            "registrationError",
-            "Pendaftaran gagal: " +
-            getErrorMessage(error)
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-async function showDashboard(){
-
-    if(!currentProfile){
-
-        await loadCurrentProfile();
-
-        return;
-    }
-
-
-    showScreen(
-        "dashboardScreen"
-    );
-
-
-    renderDashboard();
-
-
-    await refreshProfile();
-
-}
-
-
-function renderDashboard(){
-
-    if(!currentProfile){
-        return;
-    }
-
-
-    document
-        .getElementById(
-            "dashboardGreeting"
-        )
-        .textContent =
-        "Halo, " +
-        (
-            currentProfile.nama_kurir ||
-            "Kurir"
-        );
-
-
-    document
-        .getElementById(
-            "dashboardNama"
-        )
-        .textContent =
-        currentProfile.nama_kurir ||
-        "-";
-
-
-    document
-        .getElementById(
-            "dashboardWhatsapp"
-        )
-        .textContent =
-        currentProfile.nomor_whatsapp ||
-        "-";
-
-
-    document
-        .getElementById(
-            "dashboardAlamat"
-        )
-        .textContent =
-        currentProfile.alamat_lengkap ||
-        "-";
-
-
-    document
-        .getElementById(
-            "dashboardBalance"
-        )
-        .textContent =
-        formatRupiah(
-            currentProfile.saldo
-        );
-
+  }
 }
 
 
@@ -2081,1442 +1421,972 @@ function renderDashboard(){
    REFRESH PROFILE
    ========================================================= */
 
-async function refreshProfile(){
+async function refreshProfile() {
 
-    if(!currentUser){
-        return;
-    }
+  if (!currentUser) {
+    return;
+  }
 
-
-    const {
-        data,
-        error
-    } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
-        .from("kurir_profiles")
-        .select("*")
-        .eq(
-            "id",
-            currentUser.id
-        )
-        .single();
+      .from("kurir_profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .single();
 
+  if (error) {
 
-    if(error){
+    console.error(error);
 
-        console.error(error);
+    return;
+  }
 
-        showToast(
-            "Gagal memperbarui saldo.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    currentProfile =
-        data;
-
-
-    renderDashboard();
-
+  currentProfile =
+    data;
 }
 
 
 /* =========================================================
-   MENU PEMASUKAN
+   DASHBOARD
    ========================================================= */
 
-function showIncomeMenu(){
+async function showDashboard() {
 
-    showScreen(
-        "incomeMenuScreen"
+  await refreshProfile();
+
+  showPage("dashboardPage");
+
+  if (!currentProfile) {
+    return;
+  }
+
+  $("dashboardSubtitle").textContent =
+    "Halo, " +
+    currentProfile.nama_kurir;
+
+  $("dashboardBalance").textContent =
+    formatRupiah(
+      currentProfile.saldo
+    );
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function goDashboard() {
+
+  showDashboard();
+}
+
+
+function openIncomeMenu() {
+
+  showPage("incomeMenuPage");
+}
+
+
+function openExpenseMenu() {
+
+  showPage("expenseMenuPage");
+}
+
+
+function openAddIncome() {
+
+  $("incomeRegion").value = "";
+
+  $("incomeAmount").value = "";
+
+  showPage("addIncomePage");
+}
+
+
+function openAddExpense() {
+
+  $("expenseItem").value = "";
+
+  $("expenseAmount").value = "";
+
+  showPage("addExpensePage");
+}
+
+
+/* =========================================================
+   SAVE INCOME
+   ========================================================= */
+
+async function saveIncome() {
+
+  const region =
+    $("incomeRegion")
+      .value
+      .trim();
+
+  const amount =
+    Number(
+      $("incomeAmount").value
     );
 
-}
-
-
-/* =========================================================
-   TAMBAH PEMASUKAN
-   ========================================================= */
-
-function showAddIncome(){
-
-    document
-        .getElementById(
-            "incomeRegion"
-        )
-        .value = "";
-
-
-    document
-        .getElementById(
-            "incomeAmount"
-        )
-        .value = "";
-
-
-    hideError(
-        "incomeError"
-    );
-
-
-    showScreen(
-        "addIncomeScreen"
-    );
-
-}
-
-
-/* =========================================================
-   SIMPAN PEMASUKAN
-   ========================================================= */
-
-async function saveIncome(){
-
-    hideError(
-        "incomeError"
-    );
-
-
-    if(!currentUser){
-
-        showError(
-            "incomeError",
-            "Akun belum tersedia."
-        );
-
-        return;
-    }
-
-
-    const region =
-        document
-            .getElementById(
-                "incomeRegion"
-            )
-            .value
-            .trim();
-
-
-    const amount =
-        Number(
-            document
-                .getElementById(
-                    "incomeAmount"
-                )
-                .value
-        );
-
-
-    if(!region){
-
-        showError(
-            "incomeError",
-            "Wilayah wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ){
-
-        showError(
-            "incomeError",
-            "Nominal pemasukan harus lebih dari 0."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const {
-            error
-        } =
-        await supabaseClient
-            .from("kurir_transactions")
-            .insert({
-
-                kurir_id:
-                    currentUser.id,
-
-                jenis:
-                    "pemasukan",
-
-                keterangan:
-                    region,
-
-                nominal:
-                    amount
-
-            });
-
-
-        if(error){
-            throw error;
-        }
-
-
-        await refreshProfile();
-
-
-        showToast(
-            "Pemasukan berhasil disimpan.",
-            "success"
-        );
-
-
-        showIncomeHistory();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showError(
-            "incomeError",
-            "Pemasukan gagal disimpan: " +
-            getErrorMessage(error)
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOAD TRANSACTIONS
-   ========================================================= */
-
-async function getTransactionsByType(type){
-
-    if(!currentUser){
-        return [];
-    }
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("kurir_transactions")
-        .select(
-            "id,kurir_id,jenis,keterangan,nominal,created_at"
-        )
-        .eq(
-            "kurir_id",
-            currentUser.id
-        )
-        .eq(
-            "jenis",
-            type
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(error){
-        throw error;
-    }
-
-
-    return data || [];
-
-}
-
-
-/* =========================================================
-   GROUP TRANSACTIONS BY DATE
-   ========================================================= */
-
-function groupTransactionsByDate(
-    transactions
-){
-
-    const grouped = {};
-
-
-    transactions.forEach(
-        transaction => {
-
-            const dateKey =
-                getLocalDateKey(
-                    transaction.created_at
-                );
-
-
-            if(!grouped[dateKey]){
-                grouped[dateKey] = [];
-            }
-
-
-            grouped[dateKey].push(
-                transaction
-            );
-
-        }
-    );
-
-
-    return grouped;
-
-}
-
-
-/* =========================================================
-   RIWAYAT PEMASUKAN
-   ========================================================= */
-
-async function showIncomeHistory(){
-
-    showScreen(
-        "incomeHistoryScreen"
-    );
-
-
-    const container =
-        document.getElementById(
-            "incomeHistoryList"
-        );
-
-
-    container.innerHTML =
-        `
-        <div class="card">
-            <div class="spinner"></div>
-            <p class="center muted">
-                Memuat riwayat pemasukan...
-            </p>
-        </div>
-        `;
-
-
-    try{
-
-        const transactions =
-            await getTransactionsByType(
-                "pemasukan"
-            );
-
-
-        renderHistoryDates(
-            container,
-            transactions,
-            "pemasukan"
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        container.innerHTML =
-            `
-            <div class="error-box">
-                Gagal memuat riwayat:
-                ${escapeHtml(
-                    getErrorMessage(error)
-                )}
-            </div>
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RIWAYAT PENGELUARAN
-   ========================================================= */
-
-async function showExpenseHistory(){
-
-    showScreen(
-        "expenseHistoryScreen"
-    );
-
-
-    const container =
-        document.getElementById(
-            "expenseHistoryList"
-        );
-
-
-    container.innerHTML =
-        `
-        <div class="card">
-            <div class="spinner"></div>
-            <p class="center muted">
-                Memuat riwayat pengeluaran...
-            </p>
-        </div>
-        `;
-
-
-    try{
-
-        const transactions =
-            await getTransactionsByType(
-                "pengeluaran"
-            );
-
-
-        renderHistoryDates(
-            container,
-            transactions,
-            "pengeluaran"
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        container.innerHTML =
-            `
-            <div class="error-box">
-                Gagal memuat riwayat:
-                ${escapeHtml(
-                    getErrorMessage(error)
-                )}
-            </div>
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER TANGGAL RIWAYAT
-   ========================================================= */
-
-function renderHistoryDates(
-    container,
-    transactions,
-    type
-){
-
-    if(!transactions.length){
-
-        container.innerHTML =
-            `
-            <div class="card empty">
-                <div class="empty-icon">📋</div>
-                <p>Belum ada riwayat ${
-                    type === "pemasukan"
-                    ? "pemasukan"
-                    : "pengeluaran"
-                }.</p>
-            </div>
-            `;
-
-        return;
-    }
-
-
-    const grouped =
-        groupTransactionsByDate(
-            transactions
-        );
-
-
-    const dates =
-        Object.keys(grouped)
-            .sort(
-                (a,b) =>
-                    b.localeCompare(a)
-            );
-
-
-    container.innerHTML =
-        dates.map(
-            dateKey => {
-
-                const items =
-                    grouped[dateKey];
-
-
-                const total =
-                    items.reduce(
-                        (
-                            sum,
-                            item
-                        ) =>
-                            sum +
-                            Number(
-                                item.nominal || 0
-                            ),
-                        0
-                    );
-
-
-                return `
-                <button
-                    class="date-button"
-                    type="button"
-                    onclick="openHistoryDate(
-                        '${dateKey}',
-                        '${type}'
-                    )"
-                >
-
-                    <div class="date-button-title">
-                        ${escapeHtml(
-                            formatDateIndonesia(
-                                dateKey
-                            )
-                        )}
-                    </div>
-
-                    <div class="date-button-sub">
-                        ${items.length}
-                        transaksi
-                        •
-                        ${formatRupiah(total)}
-                    </div>
-
-                </button>
-                `;
-
-            }
-        )
-        .join("");
-
-}
-
-
-/* =========================================================
-   OPEN HISTORY DATE
-   ========================================================= */
-
-async function openHistoryDate(
-    dateKey,
-    type
-){
-
-    selectedHistoryDate =
-        dateKey;
-
-
-    if(type === "pemasukan"){
-
-        await showIncomeDetail(
-            dateKey
-        );
-
-    }else{
-
-        await showExpenseDetail(
-            dateKey
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DETAIL PEMASUKAN
-   ========================================================= */
-
-async function showIncomeDetail(
-    dateKey
-){
-
-    showScreen(
-        "incomeDetailScreen"
-    );
-
-
-    document
-        .getElementById(
-            "incomeDetailDateHeader"
-        )
-        .textContent =
-        formatDateIndonesia(
-            dateKey
-        );
-
-
-    const totalBox =
-        document.getElementById(
-            "incomeDailyTotal"
-        );
-
-
-    const list =
-        document.getElementById(
-            "incomeDetailList"
-        );
-
-
-    totalBox.innerHTML =
-        "Memuat...";
-
-
-    list.innerHTML =
-        "";
-
-
-    try{
-
-        const transactions =
-            await getTransactionsByType(
-                "pemasukan"
-            );
-
-
-        const items =
-            transactions.filter(
-                item =>
-                    getLocalDateKey(
-                        item.created_at
-                    ) === dateKey
-            );
-
-
-        renderDailyDetails(
-            items,
-            totalBox,
-            list,
-            "pemasukan"
-        );
-
-
-    }catch(error){
-
-        list.innerHTML =
-            `
-            <div class="error-box">
-                Gagal memuat data:
-                ${escapeHtml(
-                    getErrorMessage(error)
-                )}
-            </div>
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   DETAIL PENGELUARAN
-   ========================================================= */
-
-async function showExpenseDetail(
-    dateKey
-){
-
-    showScreen(
-        "expenseDetailScreen"
-    );
-
-
-    document
-        .getElementById(
-            "expenseDetailDateHeader"
-        )
-        .textContent =
-        formatDateIndonesia(
-            dateKey
-        );
-
-
-    const totalBox =
-        document.getElementById(
-            "expenseDailyTotal"
-        );
-
-
-    const list =
-        document.getElementById(
-            "expenseDetailList"
-        );
-
-
-    totalBox.innerHTML =
-        "Memuat...";
-
-
-    list.innerHTML =
-        "";
-
-
-    try{
-
-        const transactions =
-            await getTransactionsByType(
-                "pengeluaran"
-            );
-
-
-        const items =
-            transactions.filter(
-                item =>
-                    getLocalDateKey(
-                        item.created_at
-                    ) === dateKey
-            );
-
-
-        renderDailyDetails(
-            items,
-            totalBox,
-            list,
-            "pengeluaran"
-        );
-
-
-    }catch(error){
-
-        list.innerHTML =
-            `
-            <div class="error-box">
-                Gagal memuat data:
-                ${escapeHtml(
-                    getErrorMessage(error)
-                )}
-            </div>
-            `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER DETAIL HARIAN
-   ========================================================= */
-
-function renderDailyDetails(
-    items,
-    totalBox,
-    list,
-    type
-){
-
-    const total =
-        items.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                Number(
-                    item.nominal || 0
-                ),
-            0
-        );
-
-
-    totalBox.innerHTML =
-        `
-        <div class="daily-total-label">
-            TOTAL ${
-                type === "pemasukan"
-                ? "PEMASUKAN"
-                : "PENGELUARAN"
-            } HARI INI
-        </div>
-
-        <div class="daily-total-value">
-            ${formatRupiah(total)}
-        </div>
-        `;
-
-
-    if(!items.length){
-
-        list.innerHTML =
-            `
-            <div class="card empty">
-                Tidak ada transaksi.
-            </div>
-            `;
-
-        return;
-    }
-
-
-    list.innerHTML =
-        items.map(
-            item => {
-
-                const amount =
-                    Number(
-                        item.nominal || 0
-                    );
-
-
-                return `
-                <div class="transaction-item">
-
-                    <div class="transaction-top">
-
-                        <div>
-                            <div class="transaction-name">
-                                ${escapeHtml(
-                                    item.keterangan
-                                )}
-                            </div>
-
-                            <div class="transaction-time">
-                                ${escapeHtml(
-                                    formatTime(
-                                        item.created_at
-                                    )
-                                )}
-                            </div>
-                        </div>
-
-                        <div
-                            class="transaction-amount ${
-                                type === "pemasukan"
-                                ? "income"
-                                : "expense"
-                            }"
-                        >
-                            ${
-                                type === "pemasukan"
-                                ? "+"
-                                : "-"
-                            }
-                            ${formatRupiah(amount)}
-                        </div>
-
-                    </div>
-
-                </div>
-                `;
-
-            }
-        )
-        .join("");
-
-}
-
-
-/* =========================================================
-   MENU PENGELUARAN
-   ========================================================= */
-
-function showExpenseMenu(){
-
-    showScreen(
-        "expenseMenuScreen"
-    );
-
-}
-
-
-/* =========================================================
-   TAMBAH PENGELUARAN
-   ========================================================= */
-
-function showAddExpense(){
-
-    document
-        .getElementById(
-            "expenseName"
-        )
-        .value = "";
-
-
-    document
-        .getElementById(
-            "expenseAmount"
-        )
-        .value = "";
-
-
-    hideError(
-        "expenseError"
-    );
-
-
-    showScreen(
-        "addExpenseScreen"
-    );
-
-}
-
-
-/* =========================================================
-   SIMPAN PENGELUARAN
-   ========================================================= */
-
-async function saveExpense(){
-
-    hideError(
-        "expenseError"
-    );
-
-
-    if(!currentUser){
-
-        showError(
-            "expenseError",
-            "Akun belum tersedia."
-        );
-
-        return;
-    }
-
-
-    const name =
-        document
-            .getElementById(
-                "expenseName"
-            )
-            .value
-            .trim();
-
-
-    const amount =
-        Number(
-            document
-                .getElementById(
-                    "expenseAmount"
-                )
-                .value
-        );
-
-
-    if(!name){
-
-        showError(
-            "expenseError",
-            "Belanjaan wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ){
-
-        showError(
-            "expenseError",
-            "Harga belanjaan harus lebih dari 0."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const {
-            error
-        } =
-        await supabaseClient
-            .from("kurir_transactions")
-            .insert({
-
-                kurir_id:
-                    currentUser.id,
-
-                jenis:
-                    "pengeluaran",
-
-                keterangan:
-                    name,
-
-                nominal:
-                    amount
-
-            });
-
-
-        if(error){
-            throw error;
-        }
-
-
-        await refreshProfile();
-
-
-        showToast(
-            "Pengeluaran berhasil disimpan.",
-            "success"
-        );
-
-
-        showExpenseHistory();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showError(
-            "expenseError",
-            "Pengeluaran gagal disimpan: " +
-            getErrorMessage(error)
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   EDIT AKUN
-   ========================================================= */
-
-function showEditAccount(){
-
-    if(!currentProfile){
-        return;
-    }
-
-
-    hideError(
-        "editAccountError"
-    );
-
-
-    document
-        .getElementById(
-            "editNama"
-        )
-        .value =
-        currentProfile.nama_kurir ||
-        "";
-
-
-    document
-        .getElementById(
-            "editWhatsapp"
-        )
-        .value =
-        currentProfile.nomor_whatsapp ||
-        "";
-
-
-    document
-        .getElementById(
-            "editAlamat"
-        )
-        .value =
-        currentProfile.alamat_lengkap ||
-        "";
-
-
-    document
-        .getElementById(
-            "editSaldo"
-        )
-        .value =
-        Number(
-            currentProfile.saldo || 0
-        );
-
-
-    renderSavedLocation();
-
-
-    showScreen(
-        "editAccountScreen"
-    );
-
-}
-
-
-/* =========================================================
-   SIMPAN PERUBAHAN AKUN
-   ========================================================= */
-
-async function saveAccountChanges(){
-
-    hideError(
-        "editAccountError"
-    );
-
-
-    if(!currentUser){
-
-        showError(
-            "editAccountError",
-            "Akun belum tersedia."
-        );
-
-        return;
-    }
-
-
-    const nama =
-        document
-            .getElementById(
-                "editNama"
-            )
-            .value
-            .trim();
-
-
-    const whatsapp =
-        document
-            .getElementById(
-                "editWhatsapp"
-            )
-            .value
-            .trim();
-
-
-    const alamat =
-        document
-            .getElementById(
-                "editAlamat"
-            )
-            .value
-            .trim();
-
-
-    const saldo =
-        Number(
-            document
-                .getElementById(
-                    "editSaldo"
-                )
-                .value
-        );
-
-
-    if(!nama){
-
-        showError(
-            "editAccountError",
-            "Nama kurir wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(!whatsapp){
-
-        showError(
-            "editAccountError",
-            "Nomor WhatsApp wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(!alamat){
-
-        showError(
-            "editAccountError",
-            "Alamat wajib diisi."
-        );
-
-        return;
-    }
-
-
-    if(
-        !Number.isFinite(saldo) ||
-        saldo < 0
-    ){
-
-        showError(
-            "editAccountError",
-            "Saldo tidak boleh kurang dari 0."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const {
-            error
-        } =
-        await supabaseClient
-            .from("kurir_profiles")
-            .update({
-
-                nama_kurir:
-                    nama,
-
-                nomor_whatsapp:
-                    whatsapp,
-
-                alamat_lengkap:
-                    alamat,
-
-                saldo:
-                    saldo,
-
-                updated_at:
-                    new Date().toISOString()
-
-            })
-            .eq(
-                "id",
-                currentUser.id
-            );
-
-
-        if(error){
-            throw error;
-        }
-
-
-        await refreshProfile();
-
-
-        showToast(
-            "Data akun berhasil diperbarui.",
-            "success"
-        );
-
-
-        showDashboard();
-
-
-    }catch(error){
-
-        console.error(error);
-
-        showError(
-            "editAccountError",
-            "Perubahan gagal disimpan: " +
-            getErrorMessage(error)
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER LOKASI TERSIMPAN
-   ========================================================= */
-
-function renderSavedLocation(){
-
-    const element =
-        document.getElementById(
-            "savedLocationText"
-        );
-
-
-    if(
-        !currentProfile ||
-        currentProfile.latitude === null ||
-        currentProfile.longitude === null
-    ){
-
-        element.textContent =
-            "Lokasi belum tersedia.";
-
-        return;
-    }
-
-
-    element.innerHTML =
-        `
-        Lokasi tersimpan:<br>
-        Latitude:
-        ${Number(
-            currentProfile.latitude
-        ).toFixed(6)}
-        <br>
-        Longitude:
-        ${Number(
-            currentProfile.longitude
-        ).toFixed(6)}
-        `;
-
-}
-
-
-/* =========================================================
-   UPDATE LOCATION
-   ========================================================= */
-
-function updateCourierLocation(){
-
-    if(!navigator.geolocation){
-
-        showToast(
-            "Browser tidak mendukung lokasi.",
-            "error"
-        );
-
-        return;
-    }
-
+  if (!region) {
 
     showToast(
-        "Mengambil lokasi terbaru..."
+      "Wilayah wajib diisi."
     );
 
+    return;
+  }
 
-    navigator.geolocation.getCurrentPosition(
+  if (!Number.isFinite(amount) ||
+      amount <= 0) {
 
-        async position => {
-
-            const latitude =
-                position.coords.latitude;
-
-            const longitude =
-                position.coords.longitude;
-
-
-            try{
-
-                const {
-                    data,
-                    error
-                } =
-                await supabaseClient
-                    .from("kurir_profiles")
-                    .update({
-
-                        latitude:
-                            latitude,
-
-                        longitude:
-                            longitude,
-
-                        updated_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq(
-                        "id",
-                        currentUser.id
-                    )
-                    .select()
-                    .single();
-
-
-                if(error){
-                    throw error;
-                }
-
-
-                currentProfile =
-                    data;
-
-
-                renderSavedLocation();
-
-
-                showToast(
-                    "Lokasi berhasil diperbarui.",
-                    "success"
-                );
-
-
-            }catch(error){
-
-                console.error(error);
-
-                showToast(
-                    "Lokasi gagal disimpan: " +
-                    getErrorMessage(error),
-                    "error"
-                );
-
-            }
-
-        },
-
-        error => {
-
-            console.error(error);
-
-            showToast(
-                "Lokasi tidak berhasil diambil.",
-                "error"
-            );
-
-        },
-
-        {
-            enableHighAccuracy:true,
-            timeout:15000,
-            maximumAge:0
-        }
-
+    showToast(
+      "Nominal pemasukan harus lebih dari 0."
     );
 
+    return;
+  }
+
+  if (!currentUser) {
+
+    showToast(
+      "Akun belum siap."
+    );
+
+    return;
+  }
+
+  const button =
+    $("saveIncomeButton");
+
+  button.disabled = true;
+
+  button.textContent =
+    "MENYIMPAN...";
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("kurir_transactions")
+        .insert({
+
+          kurir_id:
+            currentUser.id,
+
+          jenis:
+            "pemasukan",
+
+          keterangan:
+            region,
+
+          nominal:
+            amount
+
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    await refreshProfile();
+
+    showToast(
+      "Pemasukan berhasil disimpan."
+    );
+
+    openIncomeMenu();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Gagal menyimpan pemasukan: " +
+      (error.message || "")
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "SIMPAN PEMASUKAN";
+
+  }
 }
 
 
 /* =========================================================
-   HANDLE AUTH STATE
+   SAVE EXPENSE
    ========================================================= */
 
-if(
-    supabaseClient
-){
+async function saveExpense() {
 
-    supabaseClient.auth.onAuthStateChange(
-        async (
-            event,
-            session
-        ) => {
+  const item =
+    $("expenseItem")
+      .value
+      .trim();
 
-            if(
-                session &&
-                session.user
-            ){
-
-                currentUser =
-                    session.user;
-
-            }
-
-        }
+  const amount =
+    Number(
+      $("expenseAmount").value
     );
 
+  if (!item) {
+
+    showToast(
+      "Belanjaan wajib diisi."
+    );
+
+    return;
+  }
+
+  if (!Number.isFinite(amount) ||
+      amount <= 0) {
+
+    showToast(
+      "Harga belanjaan harus lebih dari 0."
+    );
+
+    return;
+  }
+
+  if (!currentUser) {
+
+    showToast(
+      "Akun belum siap."
+    );
+
+    return;
+  }
+
+  const button =
+    $("saveExpenseButton");
+
+  button.disabled = true;
+
+  button.textContent =
+    "MENYIMPAN...";
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("kurir_transactions")
+        .insert({
+
+          kurir_id:
+            currentUser.id,
+
+          jenis:
+            "pengeluaran",
+
+          keterangan:
+            item,
+
+          nominal:
+            amount
+
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    await refreshProfile();
+
+    showToast(
+      "Pengeluaran berhasil disimpan."
+    );
+
+    openExpenseMenu();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Gagal menyimpan pengeluaran: " +
+      (error.message || "")
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "SIMPAN PENGELUARAN";
+
+  }
 }
 
 
 /* =========================================================
-   MENCEGAH FORM SUBMIT DENGAN ENTER
+   LOCAL DATE
+   ========================================================= */
+
+function getLocalDateKey(dateString) {
+
+  const date =
+    new Date(dateString);
+
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
+function formatDateIndonesia(dateKey) {
+
+  const parts =
+    dateKey.split("-");
+
+  if (parts.length !== 3) {
+    return dateKey;
+  }
+
+  const date =
+    new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+
+  return date.toLocaleDateString(
+    "id-ID",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  );
+}
+
+
+function formatTime(dateString) {
+
+  const date =
+    new Date(dateString);
+
+  return date.toLocaleTimeString(
+    "id-ID",
+    {
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+}
+
+
+/* =========================================================
+   GET TRANSACTIONS
+   ========================================================= */
+
+async function getTransactions(type) {
+
+  if (!currentUser) {
+    return [];
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("kurir_transactions")
+      .select("*")
+      .eq(
+        "kurir_id",
+        currentUser.id
+      )
+      .eq(
+        "jenis",
+        type
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+/* =========================================================
+   GROUP TRANSACTIONS
+   ========================================================= */
+
+function groupByDate(transactions) {
+
+  const groups = {};
+
+  transactions.forEach(transaction => {
+
+    const dateKey =
+      getLocalDateKey(
+        transaction.created_at
+      );
+
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+
+    groups[dateKey].push(
+      transaction
+    );
+
+  });
+
+  return groups;
+}
+
+
+/* =========================================================
+   INCOME HISTORY
+   ========================================================= */
+
+async function openIncomeHistory() {
+
+  showPage("incomeHistoryPage");
+
+  const container =
+    $("incomeHistoryContent");
+
+  container.innerHTML =
+    '<div class="loading">Memuat riwayat...</div>';
+
+  try {
+
+    const transactions =
+      await getTransactions(
+        "pemasukan"
+      );
+
+    if (!transactions.length) {
+
+      container.innerHTML =
+        '<div class="card empty">Belum ada riwayat pemasukan.</div>';
+
+      return;
+    }
+
+    const groups =
+      groupByDate(transactions);
+
+    const dates =
+      Object.keys(groups)
+        .sort()
+        .reverse();
+
+    container.innerHTML =
+      dates.map(dateKey => {
+
+        const total =
+          groups[dateKey]
+            .reduce(
+              (sum, item) =>
+                sum + Number(item.nominal),
+              0
+            );
+
+        return `
+          <button
+            class="history-date"
+            onclick="openIncomeDateDetail('${dateKey}')"
+          >
+            <div>${escapeHtml(formatDateIndonesia(dateKey))}</div>
+            <div style="margin-top:6px;color:#15803d;">
+              Total: ${escapeHtml(formatRupiah(total))}
+            </div>
+          </button>
+        `;
+
+      }).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="card empty">Gagal memuat riwayat.</div>';
+
+    showToast(
+      error.message || "Gagal memuat data."
+    );
+  }
+}
+
+
+/* =========================================================
+   INCOME DATE DETAIL
+   ========================================================= */
+
+async function openIncomeDateDetail(dateKey) {
+
+  showPage("incomeDetailPage");
+
+  const container =
+    $("incomeDetailContent");
+
+  container.innerHTML =
+    '<div class="loading">Memuat detail...</div>';
+
+  try {
+
+    const transactions =
+      await getTransactions(
+        "pemasukan"
+      );
+
+    const filtered =
+      transactions.filter(
+        item =>
+          getLocalDateKey(
+            item.created_at
+          ) === dateKey
+      );
+
+    const total =
+      filtered.reduce(
+        (sum, item) =>
+          sum + Number(item.nominal),
+        0
+      );
+
+    container.innerHTML = `
+      <div class="card">
+
+        <div class="card-title">
+          ${escapeHtml(formatDateIndonesia(dateKey))}
+        </div>
+
+        ${
+          filtered.length
+            ? filtered.map(item => `
+              <div class="transaction">
+
+                <div class="transaction-top">
+
+                  <div>
+
+                    <div class="transaction-title">
+                      ${escapeHtml(item.keterangan)}
+                    </div>
+
+                    <div class="transaction-time">
+                      ${escapeHtml(formatTime(item.created_at))}
+                    </div>
+
+                  </div>
+
+                  <div class="transaction-value income-value">
+                    ${escapeHtml(formatRupiah(item.nominal))}
+                  </div>
+
+                </div>
+
+              </div>
+            `).join("")
+            : '<div class="empty">Tidak ada data.</div>'
+        }
+
+        <div class="daily-total">
+
+          <span>
+            Total Pemasukan
+          </span>
+
+          <span class="income-value">
+            ${escapeHtml(formatRupiah(total))}
+          </span>
+
+        </div>
+
+      </div>
+    `;
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="card empty">Gagal memuat detail.</div>';
+  }
+}
+
+
+/* =========================================================
+   EXPENSE HISTORY
+   ========================================================= */
+
+async function openExpenseHistory() {
+
+  showPage("expenseHistoryPage");
+
+  const container =
+    $("expenseHistoryContent");
+
+  container.innerHTML =
+    '<div class="loading">Memuat riwayat...</div>';
+
+  try {
+
+    const transactions =
+      await getTransactions(
+        "pengeluaran"
+      );
+
+    if (!transactions.length) {
+
+      container.innerHTML =
+        '<div class="card empty">Belum ada riwayat pengeluaran.</div>';
+
+      return;
+    }
+
+    const groups =
+      groupByDate(transactions);
+
+    const dates =
+      Object.keys(groups)
+        .sort()
+        .reverse();
+
+    container.innerHTML =
+      dates.map(dateKey => {
+
+        const total =
+          groups[dateKey]
+            .reduce(
+              (sum, item) =>
+                sum + Number(item.nominal),
+              0
+            );
+
+        return `
+          <button
+            class="history-date"
+            onclick="openExpenseDateDetail('${dateKey}')"
+          >
+            <div>${escapeHtml(formatDateIndonesia(dateKey))}</div>
+
+            <div style="margin-top:6px;color:#dc2626;">
+              Total: ${escapeHtml(formatRupiah(total))}
+            </div>
+
+          </button>
+        `;
+
+      }).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="card empty">Gagal memuat riwayat.</div>';
+
+    showToast(
+      error.message || "Gagal memuat data."
+    );
+  }
+}
+
+
+/* =========================================================
+   EXPENSE DATE DETAIL
+   ========================================================= */
+
+async function openExpenseDateDetail(dateKey) {
+
+  showPage("expenseDetailPage");
+
+  const container =
+    $("expenseDetailContent");
+
+  container.innerHTML =
+    '<div class="loading">Memuat detail...</div>';
+
+  try {
+
+    const transactions =
+      await getTransactions(
+        "pengeluaran"
+      );
+
+    const filtered =
+      transactions.filter(
+        item =>
+          getLocalDateKey(
+            item.created_at
+          ) === dateKey
+      );
+
+    const total =
+      filtered.reduce(
+        (sum, item) =>
+          sum + Number(item.nominal),
+        0
+      );
+
+    container.innerHTML = `
+      <div class="card">
+
+        <div class="card-title">
+          ${escapeHtml(formatDateIndonesia(dateKey))}
+        </div>
+
+        ${
+          filtered.length
+            ? filtered.map(item => `
+              <div class="transaction">
+
+                <div class="transaction-top">
+
+                  <div>
+
+                    <div class="transaction-title">
+                      ${escapeHtml(item.keterangan)}
+                    </div>
+
+                    <div class="transaction-time">
+                      ${escapeHtml(formatTime(item.created_at))}
+                    </div>
+
+                  </div>
+
+                  <div class="transaction-value expense-value">
+                    ${escapeHtml(formatRupiah(item.nominal))}
+                  </div>
+
+                </div>
+
+              </div>
+            `).join("")
+            : '<div class="empty">Tidak ada data.</div>'
+        }
+
+        <div class="daily-total">
+
+          <span>
+            Total Pengeluaran
+          </span>
+
+          <span class="expense-value">
+            ${escapeHtml(formatRupiah(total))}
+          </span>
+
+        </div>
+
+      </div>
+    `;
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="card empty">Gagal memuat detail.</div>';
+  }
+}
+
+
+/* =========================================================
+   EDIT ACCOUNT
+   ========================================================= */
+
+async function openEditAccount() {
+
+  await refreshProfile();
+
+  if (!currentProfile) {
+    return;
+  }
+
+  $("editNama").value =
+    currentProfile.nama_kurir || "";
+
+  $("editWhatsapp").value =
+    currentProfile.nomor_whatsapp || "";
+
+  $("editAlamat").value =
+    currentProfile.alamat_lengkap || "";
+
+  $("editSaldo").value =
+    currentProfile.saldo ?? 0;
+
+  showPage("editAccountPage");
+}
+
+
+/* =========================================================
+   SAVE ACCOUNT
+   ========================================================= */
+
+async function saveAccount() {
+
+  const nama =
+    $("editNama").value.trim();
+
+  const whatsapp =
+    $("editWhatsapp").value.trim();
+
+  const alamat =
+    $("editAlamat").value.trim();
+
+  const saldo =
+    Number(
+      $("editSaldo").value
+    );
+
+  if (!nama) {
+
+    showToast(
+      "Nama wajib diisi."
+    );
+
+    return;
+  }
+
+  if (!whatsapp) {
+
+    showToast(
+      "Nomor WhatsApp wajib diisi."
+    );
+
+    return;
+  }
+
+  if (!alamat) {
+
+    showToast(
+      "Alamat wajib diisi."
+    );
+
+    return;
+  }
+
+  if (!Number.isFinite(saldo) ||
+      saldo < 0) {
+
+    showToast(
+      "Saldo tidak valid."
+    );
+
+    return;
+  }
+
+  const button =
+    $("saveAccountButton");
+
+  button.disabled = true;
+
+  button.textContent =
+    "MENYIMPAN...";
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("kurir_profiles")
+        .update({
+
+          nama_kurir:
+            nama,
+
+          nomor_whatsapp:
+            whatsapp,
+
+          alamat_lengkap:
+            alamat,
+
+          saldo:
+            saldo,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          currentUser.id
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    await refreshProfile();
+
+    showToast(
+      "Akun berhasil diperbarui."
+    );
+
+    showDashboard();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Gagal menyimpan akun: " +
+      (error.message || "")
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "SIMPAN PERUBAHAN";
+
+  }
+}
+
+
+/* =========================================================
+   START APPLICATION
    ========================================================= */
 
 document.addEventListener(
-    "keydown",
-    function(event){
+  "DOMContentLoaded",
+  () => {
 
-        if(
-            event.key === "Enter" &&
-            event.target.tagName === "INPUT"
-        ){
+    loadAccount();
 
-            event.preventDefault();
-
-        }
-
-    }
+  }
 );
 
 </script>
 
 </body>
-  </html>
+</html>
