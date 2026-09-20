@@ -13,7 +13,10 @@
 <script>
 const SUPABASE_URL='https://erdmastyaeaubqvqpurx.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_knCGieSffnDxLWPjjuNMcg_6OmMPgRb';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+/* PERBAIKAN: Supabase tidak lagi membuat seluruh aplikasi berhenti
+   apabila library Supabase belum berhasil dimuat. */
+const sb=(window.supabase&&typeof window.supabase.createClient==='function')?window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY):null;
 
 const C=[
 ['Transportasi & Pengantaran',[['Kurir','Tujuan Pengantaran','Harga'],['Ojek','Tujuan Perjalanan','Harga'],['Driver','Tujuan Perjalanan','Harga'],['Ojek Online','Tujuan Perjalanan','Harga'],['Jasa Antar Barang','Tujuan Pengantaran','Harga'],['Rental & Angkutan','Tujuan Perjalanan','Harga'],['Travel','Tujuan Perjalanan','Harga']]],
@@ -162,7 +165,7 @@ return false;
 
 async function cloudProfile(){
 
-if(!S.user)return false;
+if(!S.user||!sb)return false;
 
 try{
 
@@ -219,6 +222,8 @@ async function auth(){
 
 try{
 
+if(!sb)return null;
+
 let q=await sb.auth.getSession();
 
 if(q.data.session){
@@ -243,7 +248,7 @@ return null;
 
 async function saveProfile(){
 
-if(!S.user||S.p?.id!==S.user.id)return;
+if(!S.user||!sb||S.p?.id!==S.user.id)return;
 
 try{
 
@@ -270,7 +275,7 @@ updated_at:new Date().toISOString()
 
 async function insertTx(t){
 
-if(!S.user)return;
+if(!S.user||!sb)return;
 
 try{
 
@@ -301,6 +306,8 @@ render();
 
 try{
 
+if(!sb)return;
+
 let q=await sb.auth.getSession();
 
 if(q.data.session){
@@ -320,6 +327,12 @@ return;
 }
 
 try{
+
+if(!sb){
+S.screen='start';
+render();
+return;
+}
 
 let q=await sb.auth.getSession();
 
@@ -620,51 +633,6 @@ let a=ra.value.trim();
 if(!n||!u||!t||!a)
 return alert('Lengkapi semua data pendaftaran.');
 
-if(S.changing){
-
-let oldTx=S.tx;
-let oldQuick=S.quick;
-let oldSaldo=bal();
-
-let net=oldTx.reduce(
-(z,x)=>z+(x.jenis==='pemasukan'?+x.nominal:-+x.nominal),
-0
-);
-
-S.p={
-...S.p,
-nama_kurir:n,
-nama_usaha:u,
-nomor_whatsapp:t,
-alamat_lengkap:a,
-jenis_penghasilan:S.reg.cat,
-jenis_usaha:S.reg.biz,
-saldo_awal:oldSaldo-net,
-saldo:oldSaldo
-};
-
-S.accounts[S.current]={
-p:S.p,
-tx:oldTx,
-quick:oldQuick
-};
-
-loadCurrent(S.current);
-
-localSave();
-
-await saveProfile();
-
-S.adding=false;
-S.changing=false;
-
-S.screen='dash';
-render();
-
-return;
-
-}
-
 let p={
 id:'local-'+crypto.randomUUID(),
 nama_kurir:n,
@@ -679,7 +647,34 @@ saldo_awal:0,
 saldo:0
 };
 
-if(!S.adding){
+if(S.changing){
+
+let oldTx=S.tx;
+let oldQuick=S.quick;
+let oldSaldo=bal();
+
+p.id=S.p.id;
+
+p.saldo_awal=
+oldSaldo-
+oldTx.reduce(
+(z,x)=>z+(x.jenis==='pemasukan'?+x.nominal:-+x.nominal),
+0
+);
+
+S.accounts[S.current]={
+p,
+tx:oldTx,
+quick:oldQuick
+};
+
+loadCurrent(S.current);
+
+localSave();
+
+await saveProfile();
+
+}else if(!S.adding){
 
 let user=await auth();
 
@@ -949,7 +944,7 @@ amount:a
 });
 
 localStorage.setItem(
-'quick_'+(S.p?.id||'local'),
+'quick_'+(S.user?.id||'local'),
 JSON.stringify(S.quick)
 );
 
@@ -984,7 +979,7 @@ if(confirm('Hapus pemasukan tersimpan ini?')){
 S.quick.splice(i,1);
 
 localStorage.setItem(
-'quick_'+(S.p?.id||'local'),
+'quick_'+(S.user?.id||'local'),
 JSON.stringify(S.quick)
 );
 
@@ -1167,7 +1162,8 @@ if(
 if(
 S.user&&
 S.p?.id===S.user.id&&
-!String(t.id).startsWith('local-')
+!String(t.id).startsWith('local-')&&
+sb
 ){
 
 let q=await sb
