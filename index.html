@@ -12,27 +12,27 @@ body{margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#222}
 .header{background:#0d6efd;color:#fff;text-align:center;padding:18px}
 .header h1{margin:0 0 5px;font-size:24px}
 .header p{margin:0;font-size:13px}
-.page{padding:16px}
-.card{border:1px solid #e1e5e9;border-radius:14px;padding:15px;margin-bottom:13px;box-shadow:0 2px 7px #0001}
+.page{padding:10px}
+.card{border:1px solid #e1e5e9;border-radius:12px;padding:11px;margin-bottom:8px;box-shadow:0 2px 7px #0001}
 h2,h3{margin-top:0}
-label{display:block;font-weight:700;margin:12px 0 6px}
-input{width:100%;padding:13px;border:1px solid #ccd2d8;border-radius:10px;background:#fff;font-size:16px}
-.btn{width:100%;border:0;border-radius:11px;padding:13px;margin-top:10px;background:#0d6efd;color:#fff;font-weight:700}
+label{display:block;font-weight:700;margin:8px 0 4px}
+input{width:100%;padding:10px;border:1px solid #ccd2d8;border-radius:10px;background:#fff;font-size:16px}
+.btn{width:100%;border:0;border-radius:9px;padding:10px;margin-top:6px;background:#0d6efd;color:#fff;font-weight:700}
 .success{background:#198754}
 .danger{background:#dc3545}
 .secondary{background:#6c757d}
 .light{background:#eef3f8;color:#222}
 .small{width:auto;margin:0;padding:8px 11px;font-size:13px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.options{display:grid;gap:8px}
-.option{width:100%;padding:13px;border:1px solid #d5dbe1;border-radius:10px;background:#fff;text-align:left;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.options{display:grid;gap:5px}
+.option{width:100%;padding:9px;border:1px solid #d5dbe1;border-radius:10px;background:#fff;text-align:left;font-weight:700}
 .muted{font-size:13px;color:#777}
 .notice{padding:11px;border-radius:10px;background:#fff3cd;color:#664d03;font-size:13px}
 .ok{padding:11px;border-radius:10px;background:#d1e7dd;color:#0f5132;font-size:13px}
-.balance{text-align:center;font-size:29px;font-weight:800;padding:18px}
+.balance{text-align:center;font-size:27px;font-weight:800;padding:12px}
 .balance small{display:block;font-size:13px;color:#666;font-weight:400}
 .back{border:0;background:none;color:#0d6efd;font-weight:700;padding:0;margin-bottom:12px}
-.item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid #e1e5e9;border-radius:11px;padding:11px;margin-top:8px}
+.item{display:flex;justify-content:space-between;gap:6px;align-items:center;border:1px solid #e1e5e9;border-radius:9px;padding:7px;margin-top:5px}
 .itemname{font-weight:700;overflow-wrap:anywhere}
 .history{border-bottom:1px solid #e5e5e5;padding:12px 0}
 .history:last-child{border:0}
@@ -43,17 +43,16 @@ input{width:100%;padding:13px;border:1px solid #ccd2d8;border-radius:10px;backgr
 .row{display:flex;gap:8px}
 .row>*{flex:1}
 .footer{text-align:center;color:#888;font-size:12px;padding:20px}
-.account{border:1px solid #dce2e8;border-radius:11px;padding:12px;margin-top:9px}
-.account.active{border:2px solid #0d6efd;background:#f1f7ff}
-.accounttop{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.accountname{font-weight:800}
-.badge{font-size:11px;background:#0d6efd;color:#fff;padding:4px 7px;border-radius:7px}
-@media(max-width:360px){.grid{grid-template-columns:1fr}}
+@media(max-width:360px){
+.grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 
 <body>
+
 <div class="app">
+
 <header class="header">
 <h1>🚚 KEUANGAN KURIR</h1>
 <p>Catat pemasukan, pengeluaran dan saldo usaha</p>
@@ -62,14 +61,26 @@ input{width:100%;padding:13px;border:1px solid #ccd2d8;border-radius:10px;backgr
 <div id="app"></div>
 
 <div class="footer">Keuangan Kurir</div>
+
 </div>
 
 <script>
+
 const SUPABASE_URL='https://erdmastyaeaubqvqpurx.supabase.co';
+
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_knCGieSffnDxLWPjjuNMcg_6OmMPgRb';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+const sb=(window.supabase&&typeof window.supabase.createClient==='function')
+?window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY)
+:null;
+
+
+/* =========================================================
+   DAFTAR JENIS PENGHASILAN
+========================================================= */
 
 const C=[
+
 ['Transportasi & Pengantaran',[
 ['Kurir','Tujuan Pengantaran','Harga'],
 ['Ojek','Tujuan Perjalanan','Harga'],
@@ -229,19 +240,31 @@ const C=[
 ['Usaha Lainnya',[
 ['Usaha Lainnya','Jenis Produk/Jasa','Harga']
 ]]
+
 ];
+
+
+/* =========================================================
+   STATE
+========================================================= */
 
 let S={
 screen:'loading',
 user:null,
+p:null,
+tx:[],
+quick:[],
 accounts:[],
-activeId:null,
+current:0,
+adding:false,
+changing:false,
+historyType:'pemasukan',
+historyDate:'',
 reg:{
 cat:'',
 biz:'',
 f1:'',
-f2:'',
-mode:'new'
+f2:''
 },
 loc:{
 lat:null,
@@ -249,112 +272,252 @@ lng:null
 }
 };
 
+
 const A=document.getElementById('app');
 
-const e=x=>String(x??'').replace(/[&<>"']/g,m=>({
+
+const e=x=>String(x??'').replace(
+/[&<>\"']/g,
+m=>({
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
-'"':'&quot;',
+'\"':'&quot;',
 "'":'&#039;'
-}[m]));
+}[m])
+);
 
-const rup=x=>new Intl.NumberFormat('id-ID',{
+
+const rup=x=>new Intl.NumberFormat(
+'id-ID',
+{
 style:'currency',
 currency:'IDR',
 maximumFractionDigits:0
-}).format(Number(x)||0);
+}
+).format(Number(x)||0);
 
-const dt=x=>new Date(x).toLocaleString('id-ID',{
+
+const dt=x=>new Date(x).toLocaleString(
+'id-ID',
+{
 day:'2-digit',
 month:'2-digit',
 year:'numeric',
 hour:'2-digit',
 minute:'2-digit'
-});
-
-function active(){
-return S.accounts.find(x=>String(x.id)===String(S.activeId))||null;
 }
+);
+
+
+/* =========================================================
+   SALDO
+========================================================= */
 
 function bal(){
-let p=active();
-if(!p)return 0;
 
-return (p.tx||[]).reduce((n,t)=>
-n+(t.jenis==='pemasukan'?+t.nominal:-+t.nominal),0
+let dasar=Number(S.p?.saldo_awal||0);
+
+return dasar+
+S.tx.reduce(
+(n,t)=>
+n+(t.jenis==='pemasukan'?+t.nominal:-+t.nominal),
+0
 );
+
 }
 
-function localKey(){
-return 'keuangan_kurir_accounts';
+
+/* =========================================================
+   MULTI AKUN
+========================================================= */
+
+function syncCurrent(){
+
+if(S.accounts.length){
+
+S.accounts[S.current]={
+p:S.p,
+tx:S.tx,
+quick:S.quick
+};
+
 }
+
+}
+
+
+function loadCurrent(i){
+
+syncCurrent();
+
+S.current=i;
+
+let a=S.accounts[i];
+
+S.p=a.p;
+
+S.tx=a.tx||[];
+
+S.quick=a.quick||[];
+
+}
+
 
 function localSave(){
-try{
-localStorage.setItem(localKey(),JSON.stringify({
-accounts:S.accounts,
-activeId:S.activeId
-}));
-}catch(_){}
+
+syncCurrent();
+
+if(S.accounts.length){
+
+localStorage.setItem(
+'keuangan_kurir_accounts',
+JSON.stringify(S.accounts)
+);
+
+}else if(S.p){
+
+localStorage.setItem(
+'keuangan_kurir_account',
+JSON.stringify({
+p:S.p,
+tx:S.tx,
+quick:S.quick
+})
+);
+
 }
+
+}
+
 
 function localLoad(){
-try{
-let x=JSON.parse(localStorage.getItem(localKey())||'null');
 
-if(x&&Array.isArray(x.accounts)&&x.accounts.length){
-S.accounts=x.accounts.map(normalizeAccount);
-S.activeId=x.activeId||S.accounts[0].id;
+try{
+
+let all=JSON.parse(
+localStorage.getItem('keuangan_kurir_accounts')||'null'
+);
+
+if(Array.isArray(all)&&all.length){
+
+S.accounts=all;
+
+loadCurrent(0);
+
 return true;
+
 }
 
-let old=JSON.parse(localStorage.getItem('keuangan_kurir_account')||'null');
 
-if(old?.p){
-let p=normalizeAccount({
-...old.p,
-id:old.p.id||('local-'+crypto.randomUUID()),
-tx:old.tx||[],
-quick:old.quick||[]
-});
+let x=JSON.parse(
+localStorage.getItem('keuangan_kurir_account')||'null'
+);
 
-S.accounts=[p];
-S.activeId=p.id;
+if(x?.p){
+
+x.p.saldo_awal=Number(
+x.p.saldo_awal||x.p.saldo||0
+);
+
+S.accounts=[
+{
+p:x.p,
+tx:x.tx||[],
+quick:x.quick||[]
+}
+];
+
+loadCurrent(0);
+
 localSave();
+
 return true;
+
 }
 
 }catch(_){}
 
 return false;
+
 }
 
-function normalizeAccount(p){
-return {
-id:p.id||('local-'+crypto.randomUUID()),
-owner_id:p.owner_id||null,
-nama_kurir:p.nama_kurir||'',
-nama_usaha:p.nama_usaha||'',
-nomor_whatsapp:p.nomor_whatsapp||'',
-alamat_lengkap:p.alamat_lengkap||'',
-latitude:p.latitude??null,
-longitude:p.longitude??null,
-jenis_penghasilan:p.jenis_penghasilan||'',
-jenis_usaha:p.jenis_usaha||'',
-saldo:Number(p.saldo)||0,
-tx:Array.isArray(p.tx)?p.tx:[],
-quick:Array.isArray(p.quick)?p.quick:[]
-};
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+async function cloudProfile(){
+
+if(!S.user||!sb)return false;
+
+try{
+
+let q=await sb
+.from('kurir_profiles')
+.select('*')
+.eq('id',S.user.id)
+.maybeSingle();
+
+if(q.error||!q.data)return false;
+
+let p=q.data;
+
+p.saldo_awal=Number(
+p.saldo_awal??p.saldo??0
+);
+
+let t=await sb
+.from('kurir_transactions')
+.select('*')
+.eq('kurir_id',S.user.id)
+.order('created_at',{ascending:false});
+
+let tx=t.data||[];
+
+let z=JSON.parse(
+localStorage.getItem('quick_'+S.user.id)||'[]'
+);
+
+let quick=Array.isArray(z)?z:[];
+
+S.accounts=[
+{
+p,
+tx,
+quick
 }
+];
+
+loadCurrent(0);
+
+localSave();
+
+return true;
+
+}catch(_){
+
+return false;
+
+}
+
+}
+
 
 async function auth(){
+
 try{
+
+if(!sb)return null;
+
 let q=await sb.auth.getSession();
 
 if(q.data.session){
+
 S.user=q.data.session.user;
+
 return S.user;
+
 }
 
 let a=await sb.auth.signInAnonymously();
@@ -362,128 +525,125 @@ let a=await sb.auth.signInAnonymously();
 if(a.error)throw a.error;
 
 S.user=a.data.user;
+
 return S.user;
 
 }catch(_){
+
 return null;
-}
+
 }
 
-async function cloudLoad(){
-if(!S.user)return false;
+}
+
+
+async function saveProfile(){
+
+if(
+!S.user||
+!sb||
+S.p?.id!==S.user.id
+)return;
 
 try{
 
-/*
-  Akun lama tetap dibaca dari kurir_profiles.
-  Akun tambahan dibaca dari tabel keuangan_accounts
-  jika tabel tersebut sudah dibuat.
-*/
-
-let old=await sb
+await sb
 .from('kurir_profiles')
-.select('*')
-.eq('id',S.user.id)
-.maybeSingle();
+.upsert({
 
-let list=[];
+id:S.user.id,
+nama_kurir:S.p.nama_kurir,
+nama_usaha:S.p.nama_usaha,
+nomor_whatsapp:S.p.nomor_whatsapp,
+alamat_lengkap:S.p.alamat_lengkap,
+latitude:S.p.latitude,
+longitude:S.p.longitude,
+jenis_penghasilan:S.p.jenis_penghasilan,
+jenis_usaha:S.p.jenis_usaha,
+saldo_awal:Number(S.p.saldo_awal||0),
+saldo:bal(),
+updated_at:new Date().toISOString()
 
-if(old.data){
+});
 
-let oldTx=await sb
-.from('kurir_transactions')
-.select('*')
-.eq('kurir_id',S.user.id)
-.order('created_at',{ascending:false});
-
-let quick=JSON.parse(
-localStorage.getItem('quick_'+S.user.id)||'[]'
-);
-
-list.push(normalizeAccount({
-...old.data,
-id:old.data.id||S.user.id,
-owner_id:S.user.id,
-tx:oldTx.data||[],
-quick:Array.isArray(quick)?quick:[]
-}));
+}catch(_){}
 
 }
+
+
+async function insertTx(t){
+
+if(!S.user||!sb)return;
 
 try{
 
-let more=await sb
-.from('keuangan_accounts')
-.select('*')
-.eq('owner_id',S.user.id)
-.order('created_at',{ascending:true});
+let q=await sb
+.from('kurir_transactions')
+.insert({
 
-if(!more.error&&Array.isArray(more.data)){
+kurir_id:S.user.id,
+jenis:t.jenis,
+keterangan:t.keterangan,
+nominal:t.nominal,
+created_at:t.created_at
 
-for(let p of more.data){
+})
+.select()
+.single();
 
-if(list.some(x=>String(x.id)===String(p.id)))continue;
-
-let txq=await sb
-.from('keuangan_transactions')
-.select('*')
-.eq('account_id',p.id)
-.order('created_at',{ascending:false});
-
-let qk=JSON.parse(
-localStorage.getItem('quick_'+p.id)||'[]'
-);
-
-list.push(normalizeAccount({
-...p,
-tx:txq.data||[],
-quick:Array.isArray(qk)?qk:[]
-}));
-
-}
-
-}
+if(!q.error&&q.data)t.id=q.data.id;
 
 }catch(_){}
 
-if(list.length){
-
-S.accounts=list;
-S.activeId=S.activeId&&list.some(x=>String(x.id)===String(S.activeId))
-?S.activeId
-:list[0].id;
-
-localSave();
-
-return true;
 }
 
-}catch(_){}
 
-return false;
-}
+/* =========================================================
+   INIT
+========================================================= */
 
 async function init(){
 
 if(localLoad()){
+
 S.screen='dash';
+
 render();
 
 try{
+
+if(!sb)return;
+
 let q=await sb.auth.getSession();
 
 if(q.data.session){
+
 S.user=q.data.session.user;
-await cloudLoad();
+
+await cloudProfile();
+
 render();
+
 }
 
 }catch(_){}
 
 return;
+
 }
 
+
 try{
+
+if(!sb){
+
+S.screen='start';
+
+render();
+
+return;
+
+}
 
 let q=await sb.auth.getSession();
 
@@ -491,10 +651,14 @@ if(q.data.session){
 
 S.user=q.data.session.user;
 
-if(await cloudLoad()){
+if(await cloudProfile()){
+
 S.screen='dash';
+
 render();
+
 return;
+
 }
 
 }
@@ -502,515 +666,779 @@ return;
 }catch(_){}
 
 S.screen='start';
+
 render();
+
 }
+
+
+/* =========================================================
+   ROUTER
+========================================================= */
 
 function render(){
 
 if(S.screen==='start')start();
+
 else if(S.screen==='cat')cats();
+
 else if(S.screen==='biz')biz();
+
 else if(S.screen==='reg')reg();
+
 else if(S.screen==='dash')dash();
+
 else if(S.screen==='in')income();
+
 else if(S.screen==='out')expense();
+
 else if(S.screen==='hin')history('pemasukan');
+
 else if(S.screen==='hout')history('pengeluaran');
+
+else if(S.screen==='hdetail')historyDetail();
+
+else if(S.screen==='accounts')accounts();
+
 else if(S.screen==='edit')edit();
-else A.innerHTML='<main class="page"><div class="card empty">Memuat...</div></main>';
+
+else
+A.innerHTML=
+'<main class="page"><div class="card empty">Memuat...</div></main>';
 
 }
+
+
+/* =========================================================
+   AWAL
+========================================================= */
 
 function start(){
 
 A.innerHTML=`
+
 <main class="page">
+
 <div class="card">
+
 <h2>JENIS PENGHASILAN</h2>
+
 <p class="muted">
 Pilih sumber/jenis usaha yang menjadi sumber pemasukan.
 </p>
-<button class="btn" onclick="newAccount()">
+
+<button
+class="btn"
+onclick="S.screen='cat';render()"
+>
 JENIS USAHA
 </button>
+
 </div>
+
 </main>
+
 `;
 
 }
 
-function newAccount(){
 
-S.reg={
-cat:'',
-biz:'',
-f1:'',
-f2:'',
-mode:'new'
-};
-
-S.loc={
-lat:null,
-lng:null
-};
-
-S.screen='cat';
-render();
-
-}
+/* =========================================================
+   KATEGORI
+========================================================= */
 
 function cats(){
 
 A.innerHTML=`
-<main class="page">
-<button class="back" onclick="S.screen='start';render()">← Kembali</button>
 
-<div class="card">
-<h2>JENIS PENGHASILAN</h2>
-<p class="muted">
-Pilih salah satu dari 23 kategori usaha.
-</p>
-
-<div class="options">
-${C.map((x,i)=>`
-<button class="option" onclick="pickCat(${i})">
-${i+1}. ${e(x[0])}
-</button>
-`).join('')}
-</div>
-
-</div>
-</main>
-`;
-
-}
-
-function pickCat(i){
-
-S.reg.cat=C[i][0];
-S.reg.biz='';
-S.reg.f1='';
-S.reg.f2='';
-S.screen='biz';
-render();
-
-}
-
-function biz(){
-
-let c=C.find(x=>x[0]===S.reg.cat);
-
-A.innerHTML=`
-<main class="page">
-<button class="back" onclick="S.screen='cat';render()">← Kembali</button>
-
-<div class="card">
-<h2>${e(c[0])}</h2>
-<p class="muted">Pilih jenis usaha.</p>
-
-<div class="options">
-${c[1].map((b,i)=>`
-<button class="option" onclick="pickBiz(${i})">
-${e(b[0])}
-</button>
-`).join('')}
-</div>
-
-</div>
-</main>
-`;
-
-}
-
-function pickBiz(i){
-
-let c=C.find(x=>x[0]===S.reg.cat);
-let b=c[1][i];
-
-S.reg.biz=b[0];
-S.reg.f1=b[1];
-S.reg.f2=b[2];
-
-S.screen='reg';
-render();
-
-}
-
-function reg(){
-
-A.innerHTML=`
 <main class="page">
 
-<button class="back" onclick="S.screen='biz';render()">
+<button
+class="back"
+onclick="S.screen='start';render()"
+>
 ← Kembali
 </button>
 
 <div class="card">
 
-<h2>
-${S.reg.mode==='new'?'DAFTAR AKUN':'TAMBAH AKUN USAHA'}
-</h2>
+<h2>JENIS PENGHASILAN</h2>
+
+<p class="muted">
+Pilih salah satu dari 23 kategori usaha.
+</p>
+
+<div class="options">
+
+${C.map(
+(x,i)=>
+`
+<button
+class="option"
+onclick="pickCat(${i})"
+>
+${i+1}. ${e(x[0])}
+</button>
+`
+).join('')}
+
+</div>
+
+</div>
+
+</main>
+
+`;
+
+}
+
+
+function pickCat(i){
+
+S.reg.cat=C[i][0];
+
+S.reg.biz='';
+
+S.screen='biz';
+
+render();
+
+}
+
+
+/* =========================================================
+   JENIS USAHA
+========================================================= */
+
+function biz(){
+
+let c=C.find(
+x=>x[0]===S.reg.cat
+);
+
+A.innerHTML=`
+
+<main class="page">
+
+<button
+class="back"
+onclick="S.screen='cat';render()"
+>
+← Kembali
+</button>
+
+<div class="card">
+
+<h2>${e(c[0])}</h2>
+
+<p class="muted">
+Pilih jenis usaha.
+</p>
+
+<div class="options">
+
+${c[1].map(
+(b,i)=>
+`
+<button
+class="option"
+onclick="pickBiz(${i})"
+>
+${e(b[0])}
+</button>
+`
+).join('')}
+
+</div>
+
+</div>
+
+</main>
+
+`;
+
+}
+
+
+function pickBiz(i){
+
+let c=C.find(
+x=>x[0]===S.reg.cat
+);
+
+let b=c[1][i];
+
+S.reg.biz=b[0];
+
+S.reg.f1=b[1];
+
+S.reg.f2=b[2];
+
+S.screen='reg';
+
+render();
+
+}
+
+
+/* =========================================================
+   PENDAFTARAN
+========================================================= */
+
+function reg(){
+
+A.innerHTML=`
+
+<main class="page">
+
+<button
+class="back"
+onclick="S.screen='biz';render()"
+>
+← Kembali
+</button>
+
+<div class="card">
+
+<h2>DAFTAR AKUN</h2>
 
 <div class="ok">
-<b>JENIS PENGHASILAN:</b> ${e(S.reg.cat)}
+
+<b>JENIS PENGHASILAN:</b>
+${e(S.reg.cat)}
+
 <br>
-<b>JENIS USAHA:</b> ${e(S.reg.biz)}
+
+<b>JENIS USAHA:</b>
+${e(S.reg.biz)}
+
 </div>
 
 <label>Nama</label>
-<input id="rn" placeholder="Masukkan nama">
+
+<input
+id="rn"
+placeholder="Masukkan nama"
+>
 
 <label>Nama Usaha</label>
-<input id="ru" placeholder="Masukkan nama usaha">
+
+<input
+id="ru"
+placeholder="Masukkan nama usaha"
+>
 
 <label>Nomor Telepon</label>
-<input id="rt" type="tel" placeholder="Masukkan nomor telepon">
+
+<input
+id="rt"
+type="tel"
+placeholder="Masukkan nomor telepon"
+>
 
 <label>Alamat Lengkap</label>
-<input id="ra" placeholder="Masukkan alamat lengkap">
 
-<button class="btn secondary" onclick="locate()">
+<input
+id="ra"
+placeholder="Masukkan alamat lengkap"
+>
+
+<button
+class="btn secondary"
+onclick="locate()"
+>
 📍 SHARELOCK LOKASI
 </button>
 
-<div id="ls" class="muted" style="margin-top:7px">
+<div
+id="ls"
+class="muted"
+style="margin-top:7px"
+>
 Lokasi belum dibagikan.
 </div>
 
-<button class="btn success" onclick="finish()">
+<button
+class="btn success"
+onclick="finish()"
+>
 SELESAI
 </button>
 
 </div>
+
 </main>
+
 `;
 
 }
+
+
+/* =========================================================
+   LOKASI
+========================================================= */
 
 function locate(){
 
 let z=document.getElementById('ls');
 
 if(!navigator.geolocation){
-z.textContent='Browser tidak mendukung lokasi.';
+
+z.textContent=
+'Browser tidak mendukung lokasi.';
+
 return;
+
 }
 
-z.textContent='Meminta izin lokasi...';
+z.textContent=
+'Meminta izin lokasi...';
 
 navigator.geolocation.getCurrentPosition(
+
 p=>{
+
 S.loc={
 lat:p.coords.latitude,
 lng:p.coords.longitude
 };
 
-z.textContent='Lokasi berhasil dibagikan.';
+z.textContent=
+'Lokasi berhasil dibagikan.';
+
 },
+
 ()=>{
+
 z.textContent=
 'Lokasi belum berhasil dibagikan. Izinkan lokasi pada browser lalu coba lagi.';
+
 },
+
 {
 enableHighAccuracy:true,
 timeout:15000,
 maximumAge:0
 }
+
 );
 
 }
+
+
+/* =========================================================
+   SIMPAN AKUN
+========================================================= */
 
 async function finish(){
 
-let n=document.getElementById('rn').value.trim();
-let u=document.getElementById('ru').value.trim();
-let t=document.getElementById('rt').value.trim();
-let a=document.getElementById('ra').value.trim();
+let n=rn.value.trim();
 
-if(!n||!u||!t||!a)
-return alert('Lengkapi semua data pendaftaran.');
+let u=ru.value.trim();
 
-let user=await auth();
+let t=rt.value.trim();
 
-let p=normalizeAccount({
-id:crypto.randomUUID(),
-owner_id:user?.id||null,
-nama_kurir:n,
-nama_usaha:u,
-nomor_whatsapp:t,
-alamat_lengkap:a,
-latitude:S.loc.lat,
-longitude:S.loc.lng,
-jenis_penghasilan:S.reg.cat,
-jenis_usaha:S.reg.biz,
-saldo:0,
-tx:[],
-quick:[]
-});
+let a=ra.value.trim();
 
-S.accounts.push(p);
-S.activeId=p.id;
+if(!n||!u||!t||!a){
 
-localSave();
-
-await saveAccountCloud(p);
-
-S.screen='dash';
-render();
-
-}
-
-async function saveAccountCloud(p){
-
-if(!S.user)return;
-
-try{
-
-/*
-  Akun pertama tetap memakai kurir_profiles
-  agar kode/database lama tetap dapat digunakan.
-*/
-
-if(String(p.id)===String(S.user.id)){
-
-await sb
-.from('kurir_profiles')
-.upsert({
-id:S.user.id,
-nama_kurir:p.nama_kurir,
-nama_usaha:p.nama_usaha,
-nomor_whatsapp:p.nomor_whatsapp,
-alamat_lengkap:p.alamat_lengkap,
-latitude:p.latitude,
-longitude:p.longitude,
-jenis_penghasilan:p.jenis_penghasilan,
-jenis_usaha:p.jenis_usaha,
-saldo:balFor(p),
-updated_at:new Date().toISOString()
-});
-
-return;
-}
-
-/*
-  Akun kedua dan seterusnya menggunakan
-  tabel keuangan_accounts.
-*/
-
-await sb
-.from('keuangan_accounts')
-.upsert({
-id:p.id,
-owner_id:S.user.id,
-nama_kurir:p.nama_kurir,
-nama_usaha:p.nama_usaha,
-nomor_whatsapp:p.nomor_whatsapp,
-alamat_lengkap:p.alamat_lengkap,
-latitude:p.latitude,
-longitude:p.longitude,
-jenis_penghasilan:p.jenis_penghasilan,
-jenis_usaha:p.jenis_usaha,
-saldo:balFor(p),
-updated_at:new Date().toISOString()
-});
-
-}catch(_){}
-
-}
-
-function balFor(p){
-
-return (p.tx||[]).reduce(
-(n,t)=>n+(t.jenis==='pemasukan'?+t.nominal:-+t.nominal),
-0
+return alert(
+'Lengkapi semua data pendaftaran.'
 );
 
 }
 
-function dash(){
+let p={
 
-let p=active();
+id:'local-'+crypto.randomUUID(),
 
-if(!p){
-S.screen='start';
-render();
-return;
+nama_kurir:n,
+
+nama_usaha:u,
+
+nomor_whatsapp:t,
+
+alamat_lengkap:a,
+
+latitude:S.loc.lat,
+
+longitude:S.loc.lng,
+
+jenis_penghasilan:S.reg.cat,
+
+jenis_usaha:S.reg.biz,
+
+saldo_awal:0,
+
+saldo:0
+
+};
+
+
+/*
+Jika sedang mengubah jenis usaha akun
+yang sudah ada.
+*/
+
+if(S.changing){
+
+let oldTx=S.tx;
+
+let oldQuick=S.quick;
+
+let oldSaldo=bal();
+
+p.id=S.p.id;
+
+p.saldo_awal=
+oldSaldo-
+oldTx.reduce(
+(z,x)=>
+z+
+(x.jenis==='pemasukan'
+?+x.nominal
+:-+x.nominal),
+0
+);
+
+S.accounts[S.current]={
+p,
+tx:oldTx,
+quick:oldQuick
+};
+
+loadCurrent(S.current);
+
+localSave();
+
+await saveProfile();
+
 }
 
+
+/*
+Jika ini akun pertama.
+*/
+
+else if(!S.adding){
+
+let user=await auth();
+
+p.id=user?.id||p.id;
+
+S.user=user||S.user;
+
+S.accounts=[
+{
+p,
+tx:[],
+quick:[]
+}
+];
+
+loadCurrent(0);
+
+localSave();
+
+if(user)await saveProfile();
+
+}
+
+
+/*
+Jika ini akun kedua, ketiga,
+keempat dan seterusnya.
+*/
+
+else{
+
+S.accounts.push({
+
+p,
+
+tx:[],
+
+quick:[]
+
+});
+
+loadCurrent(
+S.accounts.length-1
+);
+
+localSave();
+
+}
+
+S.adding=false;
+
+S.changing=false;
+
+S.screen='dash';
+
+render();
+
+}
+
+
+/* =========================================================
+   MENU UTAMA
+========================================================= */
+
+function dash(){
+
 A.innerHTML=`
+
 <main class="page">
 
 <div class="card">
 
 <h2>MENU UTAMA</h2>
 
-<b>${e(p.nama_kurir)}</b>
+<b>${e(S.p.nama_kurir)}</b>
 
 <div class="muted">
-${e(p.nama_usaha)}
+${e(S.p.nama_usaha)}
 </div>
 
 <div class="muted">
-${e(p.jenis_penghasilan)} — ${e(p.jenis_usaha)}
+${e(S.p.jenis_penghasilan)}
+—
+${e(S.p.jenis_usaha)}
 </div>
 
 </div>
 
 <div class="card balance">
 
-<small>SALDO</small>
+<small>SALDO SAAT INI</small>
 
 ${rup(bal())}
 
 </div>
 
+
 <div class="grid">
 
-<button class="btn success"
-onclick="S.screen='in';render()">
+<button
+class="btn success"
+onclick="S.screen='in';render()"
+>
 PEMASUKAN
 </button>
 
-<button class="btn danger"
-onclick="S.screen='out';render()">
+<button
+class="btn danger"
+onclick="S.screen='out';render()"
+>
 PENGELUARAN
 </button>
 
-<button class="btn"
-onclick="S.screen='hin';render()">
-RIWAYAT PEMASUKAN
-</button>
-
-<button class="btn"
-onclick="S.screen='hout';render()">
-RIWAYAT PENGELUARAN
-</button>
-
-<button class="btn secondary"
-onclick="S.screen='edit';render()">
+<button
+class="btn secondary"
+onclick="S.screen='edit';render()"
+>
 EDIT AKUN
 </button>
 
 </div>
 
+
+<div class="card">
+
+<button
+class="btn"
+onclick="addBusiness()"
+>
+TAMBAH AKUN
+</button>
+
+<button
+class="btn light"
+onclick="S.screen='accounts';render()"
+>
+DAFTAR AKUN
+</button>
+
+</div>
+
 </main>
+
 `;
 
 }
 
+
+/* =========================================================
+   PEMASUKAN
+========================================================= */
+
 function income(){
 
-let p=active();
-
-if(!p){
-S.screen='dash';
-render();
-return;
-}
-
 let info=
-C.find(x=>x[0]===p.jenis_penghasilan)
-?.[1]
-.find(x=>x[0]===p.jenis_usaha);
+C.find(
+x=>x[0]===S.p.jenis_penghasilan
+)?.[1]
+.find(
+x=>x[0]===S.p.jenis_usaha
+);
 
 let f1=info?.[1]||'Jenis Produk/Jasa';
+
 let f2=info?.[2]||'Harga';
 
+
 A.innerHTML=`
+
 <main class="page">
 
-<button class="back"
-onclick="S.screen='dash';render()">
+<button
+class="back"
+onclick="S.screen='dash';render()"
+>
 ← Menu Utama
 </button>
+
 
 <div class="card">
 
 <h2>PEMASUKAN</h2>
 
 <div class="notice">
-Usaha: <b>${e(p.jenis_usaha)}</b>
+Usaha:
+<b>${e(S.p.jenis_usaha)}</b>
 </div>
+
 
 <label>${e(f1)}</label>
 
-<input id="inname"
-placeholder="${e(f1)}">
+<input
+id="inname"
+placeholder="${e(f1)}"
+>
+
 
 <label>${e(f2)}</label>
 
-<input id="inamt"
+<input
+id="inamt"
 type="number"
 min="0"
 inputmode="numeric"
-placeholder="0">
+placeholder="0"
+>
 
-<button class="btn success"
-onclick="addIn()">
+
+<button
+class="btn success"
+onclick="addIn()"
+>
 TAMBAH PEMASUKAN
 </button>
 
+
+<button
+class="btn light"
+onclick="S.screen='hin';render()"
+>
+RIWAYAT PEMASUKAN
+</button>
+
 </div>
+
 
 <div class="card">
 
-<h3>TAMBAH PEMASUKAN</h3>
+<h3>TAMBAH PEMASUKAN CEPAT</h3>
 
 <p class="muted">
-Simpan pemasukan yang sering digunakan. Tidak ada batas jumlah item.
+Simpan pemasukan yang sering digunakan.
+Tidak ada batas jumlah item.
 </p>
+
 
 <div class="row">
 
-<input id="qn"
-placeholder="${e(f1)}">
+<input
+id="qn"
+placeholder="${e(f1)}"
+>
 
-<input id="qa"
+<input
+id="qa"
 type="number"
 min="0"
 inputmode="numeric"
-placeholder="${e(f2)}">
+placeholder="${e(f2)}"
+>
 
 </div>
 
-<button class="btn"
-onclick="addQuick()">
+
+<button
+class="btn"
+onclick="addQuick()"
+>
 TAMBAH
 </button>
 
-<div style="margin-top:15px">
+
+<div style="margin-top:10px">
 
 <h3>Pemasukan Tersimpan</h3>
 
+
 ${
-p.quick.length
+S.quick.length
+
 ?
-p.quick.map((x,i)=>`
+
+S.quick.map(
+(x,i)=>
+`
+
 <div class="item">
 
 <div>
-<div class="itemname">${e(x.name)}</div>
-<div class="muted">${rup(x.amount)}</div>
+
+<div class="itemname">
+${e(x.name)}
 </div>
+
+<div class="muted">
+${rup(x.amount)}
+</div>
+
+</div>
+
 
 <div class="row">
 
-<button class="btn small success"
-onclick="quickRecord(${i})">
+<button
+class="btn small success"
+onclick="quickRecord(${i})"
+>
 CATAT
 </button>
 
-<button class="btn small danger"
-onclick="quickDelete(${i})">
+<button
+class="btn small danger"
+onclick="quickDelete(${i})"
+>
 HAPUS
 </button>
 
 </div>
 
 </div>
-`).join('')
+
+`
+).join('')
+
 :
+
 '<div class="empty">Belum ada pemasukan tersimpan.</div>'
+
 }
 
 </div>
@@ -1018,99 +1446,147 @@ HAPUS
 </div>
 
 </main>
+
 `;
 
 }
 
+
+/* =========================================================
+   TAMBAH PEMASUKAN
+========================================================= */
+
 async function addIn(){
 
-let n=document.getElementById('inname').value.trim();
-let a=Number(document.getElementById('inamt').value);
+let n=inname.value.trim();
 
-if(!n||!a||a<=0)
-return alert('Isi pemasukan dan nominal dengan benar.');
+let a=Number(inamt.value);
 
-await addTx('pemasukan',n,a);
+if(!n||!a||a<=0){
 
-alert('Pemasukan berhasil dicatat.');
+return alert(
+'Isi pemasukan dan nominal dengan benar.'
+);
+
+}
+
+await addTx(
+'pemasukan',
+n,
+a
+);
+
+alert(
+'Pemasukan berhasil dicatat.'
+);
+
 render();
 
 }
+
+
+/* =========================================================
+   PEMASUKAN CEPAT
+========================================================= */
 
 function addQuick(){
 
-let p=active();
+let n=qn.value.trim();
 
-if(!p)return;
+let a=Number(qa.value);
 
-let n=document.getElementById('qn').value.trim();
-let a=Number(document.getElementById('qa').value);
+if(!n||!a||a<=0){
 
-if(!n||!a||a<=0)
-return alert('Isi nama dan harga dengan benar.');
+return alert(
+'Isi nama dan harga dengan benar.'
+);
 
-p.quick.push({
+}
+
+S.quick.push({
+
 id:crypto.randomUUID(),
+
 name:n,
+
 amount:a
+
 });
 
-localSave();
-
 localStorage.setItem(
-'quick_'+p.id,
-JSON.stringify(p.quick)
+'quick_'+(S.user?.id||'local'),
+JSON.stringify(S.quick)
 );
+
+localSave();
 
 render();
 
 }
+
 
 async function quickRecord(i){
 
-let p=active();
-let x=p?.quick[i];
+let x=S.quick[i];
 
 if(!x)return;
 
-await addTx('pemasukan',x.name,x.amount);
+await addTx(
+'pemasukan',
+x.name,
+x.amount
+);
 
-alert('Pemasukan berhasil dicatat.');
+alert(
+'Pemasukan berhasil dicatat.'
+);
+
 render();
 
 }
+
 
 function quickDelete(i){
 
-let p=active();
+if(
+confirm(
+'Hapus pemasukan tersimpan ini?'
+)
+){
 
-if(!p)return;
-
-if(confirm('Hapus pemasukan tersimpan ini?')){
-
-p.quick.splice(i,1);
+S.quick.splice(i,1);
 
 localStorage.setItem(
-'quick_'+p.id,
-JSON.stringify(p.quick)
+'quick_'+(S.user?.id||'local'),
+JSON.stringify(S.quick)
 );
 
 localSave();
+
 render();
 
 }
 
 }
+
+
+/* =========================================================
+   PENGELUARAN
+========================================================= */
 
 function expense(){
 
 A.innerHTML=`
+
 <main class="page">
 
-<button class="back"
-onclick="S.screen='dash';render()">
+<button
+class="back"
+onclick="S.screen='dash';render()"
+>
 ← Menu Utama
 </button>
+
 
 <div class="card">
 
@@ -1118,156 +1594,207 @@ onclick="S.screen='dash';render()">
 
 <label>Belanjaan</label>
 
-<input id="oname"
-placeholder="Masukkan nama belanjaan">
+<input
+id="oname"
+placeholder="Masukkan nama belanjaan"
+>
+
 
 <label>Harga Belanjaan</label>
 
-<input id="oamt"
+<input
+id="oamt"
 type="number"
 min="0"
 inputmode="numeric"
-placeholder="0">
+placeholder="0"
+>
 
-<button class="btn danger"
-onclick="addOut()">
+
+<button
+class="btn danger"
+onclick="addOut()"
+>
 TAMBAH PENGELUARAN
+</button>
+
+
+<button
+class="btn light"
+onclick="S.screen='hout';render()"
+>
+RIWAYAT PENGELUARAN
 </button>
 
 </div>
 
 </main>
+
 `;
 
 }
 
+
 async function addOut(){
 
-let n=document.getElementById('oname').value.trim();
-let a=Number(document.getElementById('oamt').value);
+let n=oname.value.trim();
 
-if(!n||!a||a<=0)
-return alert('Isi belanjaan dan nominal dengan benar.');
+let a=Number(oamt.value);
 
-await addTx('pengeluaran',n,a);
+if(!n||!a||a<=0){
 
-alert('Pengeluaran berhasil dicatat.');
+return alert(
+'Isi belanjaan dan nominal dengan benar.'
+);
+
+}
+
+await addTx(
+'pengeluaran',
+n,
+a
+);
+
+alert(
+'Pengeluaran berhasil dicatat.'
+);
+
 render();
 
 }
 
+
+/* =========================================================
+   TRANSAKSI
+========================================================= */
+
 async function addTx(j,n,a){
 
-let p=active();
-
-if(!p)return;
-
 let t={
-id:crypto.randomUUID(),
-account_id:p.id,
+
+id:'local-'+crypto.randomUUID(),
+
 jenis:j,
+
 keterangan:n,
+
 nominal:+a,
+
 created_at:new Date().toISOString()
+
 };
 
-p.tx.unshift(t);
-
-p.saldo=balFor(p);
+S.tx.unshift(t);
 
 localSave();
 
 await insertTx(t);
 
-await saveAccountCloud(p);
-
-}
-
-async function insertTx(t){
-
-let p=active();
-
-if(!p||!S.user)return;
-
-try{
-
-/*
-  Akun lama memakai tabel lama.
-  Akun tambahan memakai tabel baru.
-*/
-
-if(String(p.id)===String(S.user.id)){
-
-let q=await sb
-.from('kurir_transactions')
-.insert({
-kurir_id:S.user.id,
-jenis:t.jenis,
-keterangan:t.keterangan,
-nominal:t.nominal,
-created_at:t.created_at
-});
-
-if(q.error){
-
-return;
-}
-
-}else{
-
-await sb
-.from('keuangan_transactions')
-.insert({
-id:t.id,
-account_id:p.id,
-owner_id:S.user.id,
-jenis:t.jenis,
-keterangan:t.keterangan,
-nominal:t.nominal,
-created_at:t.created_at
-});
-
-}
-
-}catch(_){}
-
-}
-
-async function saveProfile(){
-
-let p=active();
-
-if(!p)return;
-
-p.saldo=balFor(p);
+S.p.saldo=bal();
 
 localSave();
 
-await saveAccountCloud(p);
+await saveProfile();
 
 }
+
+
+/* =========================================================
+   RIWAYAT — DAFTAR TANGGAL
+========================================================= */
 
 function history(type){
 
-let p=active();
-
-if(!p){
-S.screen='dash';
-render();
-return;
-}
-
-let arr=(p.tx||[]).filter(
+let arr=S.tx.filter(
 t=>t.jenis===type
 );
 
+let groups={};
+
+
+arr.forEach(t=>{
+
+let d=new Date(t.created_at);
+
+let k=d.toLocaleDateString(
+'id-ID',
+{
+year:'numeric',
+month:'2-digit',
+day:'2-digit'
+}
+);
+
+(groups[k]??=[]).push(t);
+
+});
+
+
+let rows=
+Object.entries(groups)
+.sort(
+(a,b)=>b[0].localeCompare(a[0])
+)
+.map(
+([k,v])=>{
+
+let total=v.reduce(
+(n,t)=>n+Number(t.nominal),
+0
+);
+
+let label=
+new Date(
+v[0].created_at
+).toLocaleDateString(
+'id-ID',
+{
+day:'2-digit',
+month:'long',
+year:'numeric'
+}
+);
+
+return `
+
+<button
+class="option"
+style="
+margin-bottom:5px;
+display:flex;
+justify-content:space-between;
+align-items:center
+"
+onclick="openHistoryDate('${type}','${k}')"
+>
+
+<span>
+${label}
+</span>
+
+<b>
+${rup(total)} ›
+</b>
+
+</button>
+
+`;
+
+}
+).join('');
+
+
 A.innerHTML=`
+
 <main class="page">
 
-<button class="back"
-onclick="S.screen='dash';render()">
+<button
+class="back"
+onclick="S.screen='dash';render()"
+>
 ← Menu Utama
 </button>
+
 
 <div class="card">
 
@@ -1277,297 +1804,600 @@ ${type==='pemasukan'
 :'RIWAYAT PENGELUARAN'}
 </h2>
 
+
 ${
-arr.length
-?
-arr.map(t=>`
-<div class="history">
-
-<div class="historytop">
-
-<div>
-
-<b>${e(t.keterangan)}</b>
-
-<div class="muted">
-${dt(t.created_at)}
-</div>
-
-</div>
-
-<div class="${type==='pemasukan'?'in':'out'}">
-${type==='pemasukan'?'+':'-'}${rup(t.nominal)}
-</div>
-
-</div>
-
-<button class="btn small danger"
-style="margin-top:8px"
-onclick="delTx('${e(t.id)}')">
-HAPUS
-</button>
-
-</div>
-`).join('')
-:
+rows||
 '<div class="empty">Belum ada riwayat.</div>'
 }
 
 </div>
 
 </main>
+
 `;
 
 }
 
+
+function openHistoryDate(
+type,
+key
+){
+
+S.historyType=type;
+
+S.historyDate=key;
+
+S.screen='hdetail';
+
+render();
+
+}
+
+
+/* =========================================================
+   RINCIAN RIWAYAT BERDASARKAN TANGGAL
+========================================================= */
+
+function historyDetail(){
+
+let type=S.historyType;
+
+let key=S.historyDate;
+
+
+let arr=S.tx.filter(
+
+t=>
+
+t.jenis===type&&
+
+new Date(
+t.created_at
+).toLocaleDateString(
+'id-ID',
+{
+year:'numeric',
+month:'2-digit',
+day:'2-digit'
+}
+)===key
+
+);
+
+
+let label=
+
+arr[0]
+
+?
+
+new Date(
+arr[0].created_at
+).toLocaleDateString(
+'id-ID',
+{
+day:'2-digit',
+month:'long',
+year:'numeric'
+}
+)
+
+:key;
+
+
+let total=
+
+arr.reduce(
+(n,t)=>n+Number(t.nominal),
+0
+);
+
+
+A.innerHTML=`
+
+<main class="page">
+
+<button
+class="back"
+onclick="
+S.screen='${type==='pemasukan'?'hin':'hout'}';
+render()
+"
+>
+← Daftar Tanggal
+</button>
+
+
+<div class="card">
+
+<h2>
+${type==='pemasukan'
+?'PEMASUKAN'
+:'PENGELUARAN'}
+</h2>
+
+
+<div class="notice">
+${label}
+</div>
+
+
+${
+arr.map(
+t=>
+`
+
+<div class="history">
+
+<div class="historytop">
+
+<div class="itemname">
+${e(t.keterangan)}
+</div>
+
+<div
+class="${type==='pemasukan'?'in':'out'}"
+>
+${type==='pemasukan'?'+':'-'}
+${rup(t.nominal)}
+</div>
+
+</div>
+
+
+<button
+class="btn small danger"
+onclick="delTx('${e(t.id)}')"
+>
+HAPUS
+</button>
+
+</div>
+
+`
+).join('')
+}
+
+
+<div
+class="balance"
+style="padding:10px 0"
+>
+
+<small>
+Total
+${type==='pemasukan'
+?'Pemasukan'
+:'Pengeluaran'}
+</small>
+
+${rup(total)}
+
+</div>
+
+</div>
+
+</main>
+
+`;
+
+}
+
+
+/* =========================================================
+   HAPUS TRANSAKSI
+========================================================= */
+
 async function delTx(id){
 
-let p=active();
-
-if(!p)return;
-
-let t=p.tx.find(
+let t=S.tx.find(
 x=>String(x.id)===String(id)
 );
 
-if(!t)return;
-
-if(!confirm(
+if(
+!t||
+!confirm(
 'Hapus transaksi ini? Saldo akan disesuaikan.'
-))return;
+)
+)return;
 
-if(S.user){
 
-try{
+if(
+S.user&&
+!String(t.id).startsWith('local-')
+){
 
-if(String(p.id)===String(S.user.id)){
-
-if(!String(t.id).startsWith('local-')){
-
-let q=await sb
+let q=
+await sb
 .from('kurir_transactions')
 .delete()
 .eq('id',t.id)
 .eq('kurir_id',S.user.id);
 
-if(q.error)
+if(q.error){
+
 return alert(
 'Transaksi belum dapat dihapus dari database.'
 );
 
 }
 
-}else{
-
-let q=await sb
-.from('keuangan_transactions')
-.delete()
-.eq('id',t.id)
-.eq('account_id',p.id);
-
-if(q.error)
-return alert(
-'Transaksi belum dapat dihapus dari database.'
-);
-
 }
 
-}catch(_){}
 
-}
-
-p.tx=p.tx.filter(
+S.tx=S.tx.filter(
 x=>String(x.id)!==String(id)
 );
 
-p.saldo=balFor(p);
+S.p.saldo=bal();
 
 localSave();
 
-await saveAccountCloud(p);
+await saveProfile();
 
 render();
 
 }
+
+
+/* =========================================================
+   DAFTAR AKUN
+========================================================= */
+
+function accounts(){
+
+syncCurrent();
+
+
+A.innerHTML=`
+
+<main class="page">
+
+<button
+class="back"
+onclick="S.screen='dash';render()"
+>
+← Menu Utama
+</button>
+
+
+<div class="card">
+
+<h2>DAFTAR AKUN</h2>
+
+<p class="muted">
+Pilih akun yang ingin digunakan.
+</p>
+
+
+${
+S.accounts.map(
+(a,i)=>`
+
+<button
+class="option"
+style="margin-bottom:5px"
+onclick="switchAccount(${i})"
+>
+
+<b>
+${e(a.p.nama_usaha)}
+</b>
+
+<br>
+
+<span class="muted">
+
+${e(a.p.jenis_penghasilan)}
+
+—
+
+${e(a.p.jenis_usaha)}
+
+·
+
+${rup(
+(()=>{
+let tx=a.tx||[];
+
+return Number(
+a.p.saldo_awal||0
+)+
+tx.reduce(
+(n,t)=>
+n+
+(t.jenis==='pemasukan'
+?+t.nominal
+:-+t.nominal),
+0
+);
+
+})()
+)}
+
+</span>
+
+</button>
+
+`
+).join('')
+}
+
+</div>
+
+
+<button
+class="btn"
+onclick="addBusiness()"
+>
++ TAMBAH AKUN
+</button>
+
+
+</main>
+
+`;
+
+}
+
+
+/* =========================================================
+   EDIT AKUN
+========================================================= */
 
 function edit(){
 
-let p=active();
-
-if(!p){
-S.screen='dash';
-render();
-return;
-}
-
 A.innerHTML=`
+
 <main class="page">
 
-<button class="back"
-onclick="S.screen='dash';render()">
+<button
+class="back"
+onclick="S.screen='dash';render()"
+>
 ← Menu Utama
 </button>
+
 
 <div class="card">
 
 <h2>EDIT AKUN</h2>
 
+
+<label>Saldo Saat Ini</label>
+
+<input
+id="esaldo"
+type="number"
+min="0"
+inputmode="numeric"
+value="${bal()}"
+>
+
+
 <label>Nama</label>
 
-<input id="en"
-value="${e(p.nama_kurir)}">
+<input
+id="en"
+value="${e(S.p.nama_kurir)}"
+>
+
 
 <label>Nama Usaha</label>
 
-<input id="eu"
-value="${e(p.nama_usaha)}">
+<input
+id="eu"
+value="${e(S.p.nama_usaha)}"
+>
+
 
 <label>Nomor Telepon</label>
 
-<input id="et"
-value="${e(p.nomor_whatsapp)}">
+<input
+id="et"
+value="${e(S.p.nomor_whatsapp)}"
+>
+
 
 <label>Alamat Lengkap</label>
 
-<input id="ea"
-value="${e(p.alamat_lengkap)}">
+<input
+id="ea"
+value="${e(S.p.alamat_lengkap)}"
+>
 
-<div class="notice" style="margin-top:12px">
 
-<b>JENIS PENGHASILAN</b><br>
-${e(p.jenis_penghasilan)}
+<div class="notice">
 
-<br><br>
+<b>Sumber Penghasilan:</b>
+${e(S.p.jenis_penghasilan)}
 
-<b>JENIS USAHA</b><br>
-${e(p.jenis_usaha)}
+<br>
+
+<b>Jenis Usaha:</b>
+${e(S.p.jenis_usaha)}
 
 </div>
 
-<button class="btn success"
-onclick="saveEdit()">
+
+<button
+class="btn light"
+onclick="changeBusiness()"
+>
+UBAH SUMBER PENGHASILAN / JENIS USAHA
+</button>
+
+
+<button
+class="btn success"
+onclick="saveEdit()"
+>
 SIMPAN PERUBAHAN
 </button>
 
 </div>
 
-<div class="card">
-
-<h3>SEMUA AKUN USAHA</h3>
-
-<p class="muted">
-Pilih akun usaha untuk berpindah ke akun tersebut.
-</p>
-
-${S.accounts.map(x=>`
-<div class="account ${String(x.id)===String(S.activeId)?'active':''}">
-
-<div class="accounttop">
-
-<div>
-
-<div class="accountname">
-${e(x.nama_usaha)}
-</div>
-
-<div class="muted">
-${e(x.jenis_usaha)}
-</div>
-
-<div class="muted">
-Saldo: ${rup(balFor(x))}
-</div>
-
-</div>
-
-${
-String(x.id)===String(S.activeId)
-?
-'<span class="badge">AKTIF</span>'
-:
-''
-}
-
-</div>
-
-${
-String(x.id)!==String(S.activeId)
-?
-`<button class="btn"
-onclick="switchAccount('${e(x.id)}')">
-PILIH AKUN INI
-</button>`
-:
-''
-}
-
-</div>
-`).join('')}
-
-<button class="btn"
-onclick="newAccount()">
-+ TAMBAH JENIS PENGHASILAN
-</button>
-
-</div>
-
 </main>
+
 `;
 
 }
 
-function switchAccount(id){
 
-let p=S.accounts.find(
-x=>String(x.id)===String(id)
-);
-
-if(!p)return;
-
-S.activeId=p.id;
-
-localSave();
-
-S.screen='dash';
-render();
-
-}
+/* =========================================================
+   SIMPAN EDIT
+========================================================= */
 
 async function saveEdit(){
 
-let p=active();
+let n=en.value.trim();
 
-if(!p)return;
+let u=eu.value.trim();
 
-let n=document.getElementById('en').value.trim();
-let u=document.getElementById('eu').value.trim();
-let t=document.getElementById('et').value.trim();
-let a=document.getElementById('ea').value.trim();
+let t=et.value.trim();
 
-if(!n||!u||!t||!a)
-return alert('Semua data harus diisi.');
+let a=ea.value.trim();
 
-Object.assign(p,{
+let ns=Number(esaldo.value);
+
+
+if(
+!n||
+!u||
+!t||
+!a||
+Number.isNaN(ns)||
+ns<0
+){
+
+return alert(
+'Semua data harus diisi dengan benar.'
+);
+
+}
+
+
+let net=S.tx.reduce(
+
+(z,x)=>
+z+
+(
+x.jenis==='pemasukan'
+?+x.nominal
+:-+x.nominal
+),
+
+0
+
+);
+
+
+Object.assign(
+S.p,
+{
 nama_kurir:n,
 nama_usaha:u,
 nomor_whatsapp:t,
 alamat_lengkap:a,
-saldo:balFor(p)
-});
+saldo_awal:ns-net,
+saldo:ns
+}
+);
+
 
 localSave();
 
-await saveAccountCloud(p);
+await saveProfile();
 
-alert('Perubahan berhasil disimpan.');
+alert(
+'Perubahan berhasil disimpan.'
+);
 
 S.screen='dash';
+
 render();
 
 }
 
-window.addEventListener('load',init);
+
+/* =========================================================
+   PINDAH AKUN
+========================================================= */
+
+function switchAccount(i){
+
+if(i===S.current)return;
+
+loadCurrent(i);
+
+localSave();
+
+S.screen='dash';
+
+render();
+
+}
+
+
+/* =========================================================
+   TAMBAH AKUN
+========================================================= */
+
+function addBusiness(){
+
+S.adding=true;
+
+S.changing=false;
+
+S.reg={
+cat:'',
+biz:'',
+f1:'',
+f2:''
+};
+
+S.screen='cat';
+
+render();
+
+}
+
+
+/* =========================================================
+   UBAH JENIS USAHA
+========================================================= */
+
+function changeBusiness(){
+
+S.adding=false;
+
+S.changing=true;
+
+S.reg={
+cat:'',
+biz:'',
+f1:'',
+f2:''
+};
+
+S.screen='cat';
+
+render();
+
+}
+
+
+/* =========================================================
+   MULAI APLIKASI
+========================================================= */
+
+window.addEventListener(
+'load',
+init
+);
+
 </script>
 
 </body>
-</html>
+  </html>
