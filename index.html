@@ -722,10 +722,22 @@ function syncCurrent(){
 
 function loadCurrent(i){
   syncCurrent();
+
+  // Lindungi aplikasi dari data akun lama/kosong yang tersimpan di perangkat.
+  if(!Array.isArray(S.accounts) || !S.accounts.length ||
+     !Number.isInteger(i) || i<0 || i>=S.accounts.length ||
+     !S.accounts[i] || typeof S.accounts[i]!=='object' ||
+     !S.accounts[i].p || typeof S.accounts[i].p!=='object'){
+    S.current=-1;
+    S.p=null;
+    S.tx=[];
+    S.quick=[];
+    S.profit={materials:[],goods:[],formType:'material',result:false,salePrice:''};
+    return false;
+  }
+
   S.current=i;
-
-  let a=S.accounts[i];
-
+  const a=S.accounts[i];
   S.p=a.p;
   S.tx=Array.isArray(a.tx)?a.tx:[];
   S.quick=Array.isArray(a.quick)?a.quick:[];
@@ -738,11 +750,9 @@ function loadCurrent(i){
   }:{materials:[],goods:[],formType:'material',result:false,salePrice:''};
 
   try{
-    localStorage.setItem(
-      'keuangan_pengusaha_last_account',
-      S.p.id
-    )
+    if(S.p.id!=null) localStorage.setItem('keuangan_pengusaha_last_account',String(S.p.id));
   }catch(_){}
+  return true;
 }
 
 function localSave(){
@@ -771,18 +781,14 @@ function localLoad(){
     );
 
     if(Array.isArray(all)&&all.length){
-      S.accounts=all;
+      // Abaikan entri rusak yang tidak memiliki objek p (profil akun).
+      const valid=all.filter(x=>x&&typeof x==='object'&&x.p&&typeof x.p==='object');
+      if(!valid.length) return false;
+      S.accounts=valid;
 
-      let last=localStorage.getItem(
-        'keuangan_pengusaha_last_account'
-      );
-
-      let idx=all.findIndex(
-        x=>String(x.p?.id)===String(last)
-      );
-
-      loadCurrent(idx>=0?idx:0);
-
+      let last=localStorage.getItem('keuangan_pengusaha_last_account');
+      let idx=valid.findIndex(x=>String(x.p.id??'')===String(last??''));
+      if(!loadCurrent(idx>=0?idx:0)) return false;
       return true;
     }
   }catch(_){}
@@ -883,7 +889,7 @@ async function cloudLoad(user){
       sehingga akun yang belum tersimpan/terbaca dari cloud
       bisa hilang dari daftar yang ditampilkan.
     */
-    const localAccounts=Array.isArray(S.accounts)?S.accounts:[];
+    const localAccounts=Array.isArray(S.accounts)?S.accounts.filter(x=>x&&typeof x==='object'&&x.p&&typeof x.p==='object'):[];
     const merged=[...out];
     const cloudIds=new Set(out.map(x=>String(x.p?.id)));
 
@@ -1127,6 +1133,12 @@ function render(){
   const keepMainMenu=[
     'dash','in','out','hdebt','hall','hin','hout','hdetail','hmenu','profit'
   ];
+
+  // Jika akun yang dipilih tidak ada/rusak, kembali ke halaman awal
+  // daripada menghentikan render ketika membaca properti profil.
+  if(keepMainMenu.includes(S.screen) && (!S.p || typeof S.p!=='object')){
+    S.screen='start';
+  }
 
   if(keepMainMenu.includes(S.screen)){
     mainShell();
@@ -1524,10 +1536,10 @@ function mainShell(){
   ROOT.innerHTML=`
     <main class="page simple-dashboard">
       <section class="card simple-account">
-        <div class="muted"><strong>Nama Pemilik Usaha:</strong> ${e(S.p.nama_kurir)}</div>
-        <b class="business-name">${e(S.p.nama_usaha||'')}</b>
-        <div class="muted"><strong>Jenis Usaha:</strong> ${e([S.p.jenis_penghasilan,S.p.jenis_usaha].filter(Boolean).join(' — '))}</div>
-        <div class="muted"><strong>WA:</strong> ${e(S.p.nomor_whatsapp||'')}</div>
+        <div class="muted"><strong>Nama Pemilik Usaha:</strong> ${e(S.p?.nama_kurir||'')}</div>
+        <b class="business-name">${e(S.p?.nama_usaha||'')}</b>
+        <div class="muted"><strong>Jenis Usaha:</strong> ${e([S.p?.jenis_penghasilan,S.p?.jenis_usaha].filter(Boolean).join(' — '))}</div>
+        <div class="muted"><strong>WA:</strong> ${e(S.p?.nomor_whatsapp||'')}</div>
       </section>
 
       <div id="mainContent"></div>
@@ -2462,7 +2474,7 @@ function edit(){
 
   <input
     id="en"
-    value="${e(S.p.nama_kurir)}">
+    value="${e(S.p?.nama_kurir||'')}">
 
 
   <label>Nama Usaha</label>
@@ -2647,11 +2659,20 @@ function showStartupFallback(error){
     const root=document.getElementById('app');
     if(!root) return;
     console.error('Keuangan Kurir gagal memulai:', error);
+    const detail = error && (error.stack || error.message)
+      ? String(error.stack || error.message)
+      : String(error || 'Penyebab error belum tersedia');
     root.innerHTML=`<main class="page"><section class="card" style="margin-top:18px;text-align:center">
       <h2>Aplikasi belum berhasil dimuat</h2>
-      <p class="muted">Silakan muat ulang halaman. Jika masalah tetap muncul, pastikan file <b>index.html</b> yang terbaru sudah diunggah ke repositori GitHub Pages yang benar.</p>
+      <p class="muted">Terjadi kesalahan saat aplikasi dijalankan. Detail di bawah ini membantu menemukan penyebabnya.</p>
+      <details style="text-align:left;margin:14px 0;padding:10px;border:1px solid #e1e5e9;border-radius:10px;background:#f8fafc">
+        <summary style="font-weight:700;cursor:pointer">Lihat detail kesalahan</summary>
+        <pre id="startupErrorDetail" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:#a12622;margin-top:10px"></pre>
+      </details>
       <button class="btn" type="button" onclick="location.reload()">MUAT ULANG</button>
     </section></main>`;
+    const detailNode=document.getElementById('startupErrorDetail');
+    if(detailNode) detailNode.textContent=detail;
   }catch(fallbackError){
     console.error('Fallback startup gagal:', fallbackError);
   }
@@ -2686,4 +2707,4 @@ if(document.readyState==='loading'){
 
 </script>
 </body>
-</html>
+  </html>
