@@ -2640,38 +2640,50 @@ function changeBusiness(){
    supaya aplikasi tidak bergantung pada event load.
    ========================================================= */
 
-try{
-
-  if(document.readyState==='loading'){
-
-    document.addEventListener(
-      'DOMContentLoaded',
-      ()=>{
-        try{
-          init();
-        }catch(_){
-          S.screen='start';
-          render();
-        }
-      },
-      {once:true}
-    );
-
-  }else{
-
-    init();
-
-  }
-
-}catch(_){
-
+/* Boot yang tahan terhadap kegagalan startup: jangan biarkan area aplikasi
+   kosong tanpa pesan apabila ada error JavaScript saat render pertama. */
+function showStartupFallback(error){
   try{
-    S.screen='start';
-    render();
-  }catch(__){}
+    const root=document.getElementById('app');
+    if(!root) return;
+    console.error('Keuangan Kurir gagal memulai:', error);
+    root.innerHTML=`<main class="page"><section class="card" style="margin-top:18px;text-align:center">
+      <h2>Aplikasi belum berhasil dimuat</h2>
+      <p class="muted">Silakan muat ulang halaman. Jika masalah tetap muncul, pastikan file <b>index.html</b> yang terbaru sudah diunggah ke repositori GitHub Pages yang benar.</p>
+      <button class="btn" type="button" onclick="location.reload()">MUAT ULANG</button>
+    </section></main>`;
+  }catch(fallbackError){
+    console.error('Fallback startup gagal:', fallbackError);
+  }
+}
 
+function bootApp(){
+  try{
+    const result=init();
+    if(result && typeof result.catch==='function') result.catch(showStartupFallback);
+  }catch(error){
+    showStartupFallback(error);
+  }
+}
+
+window.addEventListener('error', function(event){
+  // Tangani error runtime yang tidak tertangkap agar halaman tidak tampak kosong.
+  if(document.getElementById('app') && !document.getElementById('app').children.length){
+    showStartupFallback(event.error || event.message || 'Kesalahan JavaScript');
+  }
+});
+window.addEventListener('unhandledrejection', function(event){
+  if(document.getElementById('app') && !document.getElementById('app').children.length){
+    showStartupFallback(event.reason || 'Proses aplikasi gagal');
+  }
+});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', bootApp, {once:true});
+}else{
+  bootApp();
 }
 
 </script>
 </body>
-  </html>
+</html>
