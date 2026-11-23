@@ -453,6 +453,101 @@ input:focus,select:focus,textarea:focus{border-color:#9873ad!important;box-shado
 .profit-recommend-panel{padding-top:1px}.profit-recommend-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.profit-recommend{min-width:0;padding:10px 5px;border:1px solid #d5e5f8;border-radius:13px;background:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;color:#17304f}.profit-recommend small{font-size:9px;color:#607b9b;line-height:1.25}.profit-recommend strong{font-size:clamp(11px,3vw,14px);overflow-wrap:anywhere;color:#0756b5}.profit-recommend span{font-size:9px;color:#7288a2}.profit-recommend.selected{border-color:#1266d6;background:#e6f1ff;box-shadow:0 0 0 2px #1266d614}.profit-note{font-size:10px;color:#829096;line-height:1.4;margin-top:9px}
 @media(max-width:360px){.profit-results{padding:10px;border-radius:18px}.profit-purchase-total{padding:10px}.profit-purchase-total>strong{font-size:14px}.profit-stat{padding:9px 7px}.profit-stat .profit-label{font-size:10px}.profit-need-row{padding:8px 6px}.profit-need-price{font-size:11px}.profit-recommend-grid{gap:4px}.profit-recommend{padding:9px 3px}}
 
+
+/* KOREKSI LETAK TOMBOL UTAMA: tiga tombol dalam satu baris */
+.simple-tool-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.simple-tool-row .btn{
+  min-width:0!important;
+  width:100%!important;
+  grid-column:auto!important;
+  overflow-wrap:anywhere!important;
+}
+.simple-tool-row .btn:last-child{
+  grid-column:auto!important;
+}
+@media(max-width:380px){
+  .simple-tool-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+  .simple-tool-row .btn{font-size:9px!important;padding:8px 3px!important}
+}
+
+/* KOREKSI NAVIGASI BAWAH: empat tombol terpisah, tetap di layar saat halaman di-scroll */
+.main-nav{
+  position:fixed!important;
+  z-index:1000!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:12px!important;
+  top:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(calc(100% - 20px),500px)!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.nav-tile{
+  min-width:0!important;
+  min-height:58px!important;
+  padding:7px 2px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  border:1px solid #e1e9e9!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:0 4px 14px rgba(24,55,62,.15)!important;
+  font-size:clamp(9px,2.7vw,11px)!important;
+  line-height:1.05!important;
+  white-space:normal!important;
+}
+body{padding-bottom:88px!important}
+@media(max-width:360px){
+  .main-nav{width:calc(100% - 14px)!important;bottom:8px!important;gap:5px!important}
+  .nav-tile{min-height:52px!important;padding:5px 1px!important;border-radius:14px!important;font-size:9px!important}
+  .nav-icon{width:23px!important;height:23px!important;font-size:15px!important}
+  body{padding-bottom:78px!important}
+}
+
+
+/* KOREKSI KECIL: empat tombol navigasi bawah dibuat sedikit lebih ringkas */
+.main-nav{
+  width:min(calc(100% - 28px),460px)!important;
+  bottom:10px!important;
+  gap:6px!important;
+}
+.nav-tile{
+  min-height:52px!important;
+  padding:5px 2px!important;
+  gap:3px!important;
+  border-radius:14px!important;
+  font-size:clamp(9px,2.5vw,10px)!important;
+}
+.nav-icon{
+  width:24px!important;
+  height:24px!important;
+  font-size:16px!important;
+}
+body{padding-bottom:80px!important}
+@media(max-width:360px){
+  .main-nav{width:calc(100% - 20px)!important;bottom:8px!important;gap:4px!important}
+  .nav-tile{min-height:48px!important;padding:4px 1px!important;font-size:9px!important}
+  .nav-icon{width:22px!important;height:22px!important;font-size:15px!important}
+  body{padding-bottom:74px!important}
+}
+
 </style>
 </head>
 
@@ -2198,6 +2293,7 @@ function addDebtScreen(){
     <div class="debt-actions"><button class="btn success small" onclick="markDebtPaid('${e(t.id)}')">Lunas ✓</button><button class="btn danger small" onclick="deleteDebt('${e(t.id)}')">Hapus</button></div>
   </div>`).join('');
   A.innerHTML=`<main class="page">
+    <button class="back" onclick="S.screen='dash';render()">← Kembali</button>
     <div class="card compact-form">
       <h2>CATAT HUTANG</h2>
       <div class="debt-type-switch">
@@ -2707,4 +2803,4 @@ if(document.readyState==='loading'){
 
 </script>
 </body>
-  </html>
+</html>
